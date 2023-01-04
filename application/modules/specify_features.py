@@ -7,7 +7,6 @@ import numpy as np
 from psycop_feature_generation.application_modules.project_setup import ProjectInfo
 from timeseriesflattener.feature_spec_objects import (
     BaseModel,
-    OutcomeGroupSpec,
     OutcomeSpec,
     PredictorGroupSpec,
     PredictorSpec,
@@ -15,9 +14,6 @@ from timeseriesflattener.feature_spec_objects import (
     _AnySpec,
 )
 
-from .loaders.t2d_loaders import (  # noqa pylint: disable=unused-import
-    timestamp_exclusion,
-)
 
 log = logging.getLogger(__name__)
 
@@ -46,46 +42,44 @@ class FeatureSpecifier:
             ),
         ]
 
-    def _get_metadata_specs(self) -> list[_AnySpec]:
-        """Get metadata specs."""
-        log.info("–––––––– Generating metadata specs ––––––––")
+    def _get_visits_specs(
+        self, resolve_multiple, interval_days, allowed_nan_value_prop
+    ):
+        """Get visits specs."""
+        log.info("–––––––– Generating visits specs ––––––––")
 
-        return [
-            StaticSpec(
-                values_loader="t2d",
-                input_col_name_override="timestamp",
-                output_col_name_override="timestamp_first_t2d_hba1c",
-                prefix="",
+        visits = PredictorGroupSpec(
+            values_loader=(
+                "physical_visits",
+                "physical_visits_to_somatic",
             ),
-            StaticSpec(
-                values_loader="timestamp_exclusion",
-                input_col_name_override="timestamp",
-                output_col_name_override="timestamp_exclusion",
-                prefix="",
-            ),
-            PredictorSpec(
-                values_loader="hba1c",
-                fallback=np.nan,
-                lookbehind_days=9999,
-                resolve_multiple_fn="count",
-                allowed_nan_value_prop=0.0,
-                prefix=self.project_info.prefix.eval,
-            ),
-        ]
-
-    def _get_outcome_specs(self):
-        """Get outcome specs."""
-        log.info("–––––––– Generating outcome specs ––––––––")
-
-        return OutcomeGroupSpec(
-            values_loader=["t2d"],
-            lookahead_days=[year * 365 for year in (1, 2, 3, 4, 5)],
-            resolve_multiple_fn=["max"],
+            lookbehind_days=interval_days,
+            resolve_multiple_fn=resolve_multiple,
             fallback=[0],
-            incident=[True],
-            allowed_nan_value_prop=[0],
-            prefix=self.project_info.prefix.outcome,
+            allowed_nan_value_prop=allowed_nan_value_prop,
         ).create_combinations()
+
+        return visits
+
+    def _get_admissions_specs(
+        self, resolve_multiple, interval_days, allowed_nan_value_prop
+    ):
+        """Get admissions specs."""
+        log.info("–––––––– Generating admissions specs ––––––––")
+
+        admissions = PredictorGroupSpec(
+            values_loader=(
+                "admissions",
+                "admissions_to_psychiatry",
+                "admissions_to_somatic",
+            ),
+            lookbehind_days=interval_days,
+            resolve_multiple_fn=resolve_multiple,
+            fallback=[0],
+            allowed_nan_value_prop=allowed_nan_value_prop,
+        ).create_combinations()
+
+        return admissions
 
     def _get_medication_specs(
         self, resolve_multiple, interval_days, allowed_nan_value_prop
@@ -96,18 +90,12 @@ class FeatureSpecifier:
         psychiatric_medications = PredictorGroupSpec(
             values_loader=(
                 "antipsychotics",
+                "anxiolytics",
+                "hypnotics and sedatives",
+                "antidepressives",
+                "olanzapine",
                 "clozapine",
-                "top_10_weight_gaining_antipsychotics",
                 "lithium",
-                "valproate",
-                "lamotrigine",
-                "benzodiazepines",
-                "pregabaline",
-                "ssri",
-                "snri",
-                "tca",
-                "selected_nassa",
-                "benzodiazepine_related_sleeping_agents",
             ),
             lookbehind_days=interval_days,
             resolve_multiple_fn=resolve_multiple,
@@ -115,40 +103,13 @@ class FeatureSpecifier:
             allowed_nan_value_prop=allowed_nan_value_prop,
         ).create_combinations()
 
-        lifestyle_medications = PredictorGroupSpec(
-            values_loader=(
-                "gerd_drugs",
-                "statins",
-                "antihypertensives",
-                "diuretics",
-            ),
-            lookbehind_days=interval_days,
-            resolve_multiple_fn=resolve_multiple,
-            fallback=[0],
-            allowed_nan_value_prop=allowed_nan_value_prop,
-        ).create_combinations()
-
-        return psychiatric_medications + lifestyle_medications
+        return psychiatric_medications
 
     def _get_diagnoses_specs(
         self, resolve_multiple, interval_days, allowed_nan_value_prop
     ):
         """Get diagnoses specs."""
         log.info("–––––––– Generating diagnoses specs ––––––––")
-
-        lifestyle_diagnoses = PredictorGroupSpec(
-            values_loader=(
-                "essential_hypertension",
-                "hyperlipidemia",
-                "polycystic_ovarian_syndrome",
-                "sleep_apnea",
-                "gerd",
-            ),
-            resolve_multiple_fn=resolve_multiple,
-            lookbehind_days=interval_days,
-            fallback=[0],
-            allowed_nan_value_prop=allowed_nan_value_prop,
-        ).create_combinations()
 
         psychiatric_diagnoses = PredictorGroupSpec(
             values_loader=(
@@ -157,11 +118,10 @@ class FeatureSpecifier:
                 "f2_disorders",
                 "f3_disorders",
                 "f4_disorders",
-                "f5_disorders",
                 "f6_disorders",
                 "f7_disorders",
                 "f8_disorders",
-                "hyperkinetic_disorders",
+                "f9_disorders",
             ),
             resolve_multiple_fn=resolve_multiple,
             lookbehind_days=interval_days,
@@ -169,44 +129,72 @@ class FeatureSpecifier:
             allowed_nan_value_prop=allowed_nan_value_prop,
         ).create_combinations()
 
-        return lifestyle_diagnoses + psychiatric_diagnoses
+        return psychiatric_diagnoses
 
-    def _get_lab_result_specs(
+    def _get_coercion_specs(
         self, resolve_multiple, interval_days, allowed_nan_value_prop
     ):
-        """Get lab result specs."""
-        log.info("–––––––– Generating lab result specs ––––––––")
+        """Get coercion specs."""
+        log.info("–––––––– Generating coercion specs ––––––––")
 
-        general_lab_results = PredictorGroupSpec(
+        coercion = PredictorGroupSpec(
             values_loader=(
-                "alat",
-                "hdl",
-                "ldl",
-                "triglycerides",
-                "fasting_ldl",
-                "crp",
+                "skema_1",
+                "tvangstilbageholdelse",
+                "skema_2",
+                "medicinering",
+                "ect",
+                "af_legemlig_lidelse",
+                "skema_3",
+                "fastholden",
+                "baelte",
+                "remme",
+                "farlighed",
             ),
             resolve_multiple_fn=resolve_multiple,
             lookbehind_days=interval_days,
-            fallback=[np.nan],
+            fallback=[0],
             allowed_nan_value_prop=allowed_nan_value_prop,
         ).create_combinations()
 
-        diabetes_lab_results = PredictorGroupSpec(
+        return coercion
+
+    def _get_beroligende_medicin_specs(
+        self, resolve_multiple, interval_days, allowed_nan_value_prop
+    ):
+        """Get beroligende medicin specs."""
+        log.info("–––––––– Generating beroligende medicicn specs ––––––––")
+
+        beroligende_medicin = PredictorGroupSpec(
+            values_loader=("beroligende_medicin",),
+            lookbehind_days=interval_days,
+            resolve_multiple_fn=resolve_multiple,
+            fallback=[0],
+            allowed_nan_value_prop=allowed_nan_value_prop,
+        ).create_combinations()
+
+        return beroligende_medicin
+
+    def _get_structured_sfi_specs(
+        self, resolve_multiple, interval_days, allowed_nan_value_prop
+    ):
+        """Get structured sfi specs."""
+        log.info("–––––––– Generating structured sfi specs ––––––––")
+
+        structured_sfi = PredictorGroupSpec(
             values_loader=(
-                "hba1c",
-                "scheduled_glc",
-                "unscheduled_p_glc",
-                "egfr",
-                "albumine_creatinine_ratio",
+                "broeset_violence_checklist",
+                "selvmordsrisiko",
+                "hamilton_d17",
+                "mas_m",
             ),
             resolve_multiple_fn=resolve_multiple,
             lookbehind_days=interval_days,
-            fallback=[np.nan],
+            fallback=[0],
             allowed_nan_value_prop=allowed_nan_value_prop,
         ).create_combinations()
 
-        return general_lab_results + diabetes_lab_results
+        return structured_sfi
 
     def _get_temporal_predictor_specs(self) -> list[PredictorSpec]:
         """Generate predictor spec list."""
@@ -215,7 +203,7 @@ class FeatureSpecifier:
         if self.min_set_for_debug:
             return [
                 PredictorSpec(
-                    values_loader="hba1c",
+                    values_loader="alat",
                     lookbehind_days=30,
                     resolve_multiple_fn="max",
                     fallback=np.nan,
@@ -224,48 +212,68 @@ class FeatureSpecifier:
                 )
             ]
 
-        resolve_multiple = ["max", "min", "mean", "latest", "count"]
-        interval_days = [30, 90, 180, 365, 730]
+        interval_days = [10, 30, 180]
         allowed_nan_value_prop = [0]
 
-        lab_results = self._get_lab_result_specs(
-            resolve_multiple,
-            interval_days,
-            allowed_nan_value_prop,
+        visits = self._get_visits_specs(
+            resolve_multiple=["count"],
+            interval_days=interval_days,
+            allowed_nan_value_prop=allowed_nan_value_prop,
+        )
+
+        admissions = self._get_admissions_specs(
+            resolve_multiple=["count", "sum"],
+            interval_days=interval_days,
+            allowed_nan_value_prop=allowed_nan_value_prop,
         )
 
         diagnoses = self._get_diagnoses_specs(
-            resolve_multiple,
-            interval_days,
-            allowed_nan_value_prop,
+            resolve_multiple=["count", "bool"],
+            interval_days=interval_days,
+            allowed_nan_value_prop=allowed_nan_value_prop,
         )
 
         medications = self._get_medication_specs(
-            resolve_multiple,
-            interval_days,
-            allowed_nan_value_prop,
+            resolve_multiple=["count", "bool"],
+            interval_days=interval_days,
+            allowed_nan_value_prop=allowed_nan_value_prop,
         )
 
-        demographics = PredictorGroupSpec(
-            values_loader=["weight_in_kg", "height_in_cm", "bmi"],
-            lookbehind_days=interval_days,
-            resolve_multiple_fn=["latest"],
-            fallback=[np.nan],
+        beroligende_medicin = self._get_beroligende_medicin_specs(
+            resolve_multiple=["count", "bool"],
+            interval_days=interval_days,
             allowed_nan_value_prop=allowed_nan_value_prop,
-            prefix=self.project_info.prefix.predictor,
-        ).create_combinations()
+        )
 
-        return lab_results + medications + diagnoses + demographics
+        coercion = self._get_coercion_specs(
+            resolve_multiple=["count", "sum", "bool"],
+            interval_days=interval_days,
+            allowed_nan_value_prop=allowed_nan_value_prop,
+        )
+
+        structured_sfi = self._get_structured_sfi_specs(
+            resolve_multiple=["mean", "max", "min", "change_per_day", "variance"],
+            interval_days=interval_days,
+            allowed_nan_value_prop=allowed_nan_value_prop,
+        )
+
+        return (
+            visits
+            + admissions
+            + medications
+            + diagnoses
+            + beroligende_medicin
+            + coercion
+            + structured_sfi
+        )
 
     def get_feature_specs(self) -> list[_AnySpec]:
         """Get a spec set."""
 
         if self.min_set_for_debug:
-            return self._get_metadata_specs() + self._get_temporal_predictor_specs()
+            return (
+                self._get_temporal_predictor_specs()
+                # + self._get_outcome_specs()
+            )
 
-        return (
-            self._get_temporal_predictor_specs()
-            + self._get_static_predictor_specs()
-            + self._get_outcome_specs()
-            + self._get_metadata_specs()
-        )
+        return self._get_temporal_predictor_specs() + self._get_static_predictor_specs()

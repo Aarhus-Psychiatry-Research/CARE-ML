@@ -2,7 +2,11 @@
 
 import logging
 
-from modules.specify_features import FeatureSpecifier
+# had to add application - something's up with the paths
+from application.modules.specify_features import FeatureSpecifier
+from application.modules.loaders.load_coercion_df_with_prediction_times_and_outcome import (
+    LoadCoercion,
+)
 from psycop_feature_generation.application_modules.describe_flattened_dataset import (
     save_flattened_dataset_description_to_disk,
 )
@@ -23,9 +27,6 @@ from psycop_feature_generation.application_modules.wandb_utils import (
 from psycop_feature_generation.loaders.raw.load_moves import (
     load_move_into_rm_for_exclusion,
 )
-from psycop_feature_generation.loaders.raw.load_visits import (
-    physical_visits_to_psychiatry,
-)
 
 import wandb
 
@@ -37,12 +38,15 @@ def main():
     """Main function for loading, generating and evaluating a flattened
     dataset."""
     feature_specs = FeatureSpecifier(
-        project_info=project_info, min_set_for_debug=True # Remember to set to False when generating full dataset
+        project_info=project_info,
+        min_set_for_debug=False,  # Remember to set to False when generating full dataset
     ).get_feature_specs()
 
     flattened_df = create_flattened_dataset(
         feature_specs=feature_specs,
-        prediction_times_df=physical_visits_to_psychiatry(timestamps_only=True),
+        prediction_times_df=LoadCoercion.coercion_df(
+            timestamps_only=True
+        ),
         drop_pred_times_with_insufficient_look_distance=False,
         project_info=project_info,
         quarantine_df=load_move_into_rm_for_exclusion(),
@@ -65,7 +69,7 @@ if __name__ == "__main__":
     # wandb_alert_on_exception, which will send a slack alert
     # if you have wandb alerts set up in wandb
     project_info = get_project_info(
-        project_name="t2d",
+        project_name="coercion",
     )
 
     init_root_logger(project_info=project_info)
