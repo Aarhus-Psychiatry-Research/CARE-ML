@@ -1,6 +1,6 @@
 """Feature specification module."""
 import logging
-from sys import prefix
+from sys import prefix  # delete?
 
 import numpy as np
 
@@ -60,7 +60,7 @@ class FeatureSpecifier:
         ).create_combinations()
 
         return visits
- 
+
     def _get_admissions_specs(
         self, resolve_multiple, interval_days, allowed_nan_value_prop
     ):
@@ -212,7 +212,7 @@ class FeatureSpecifier:
                 )
             ]
 
-        interval_days = [10, 30, 180]
+        # interval_days = [10, 30, 180]
         allowed_nan_value_prop = [0]
 
         visits = self._get_visits_specs(
@@ -223,7 +223,7 @@ class FeatureSpecifier:
 
         admissions = self._get_admissions_specs(
             resolve_multiple=["count", "sum"],
-            interval_days=interval_days,
+            interval_days=[10, 30, 180],
             allowed_nan_value_prop=allowed_nan_value_prop,
         )
 
