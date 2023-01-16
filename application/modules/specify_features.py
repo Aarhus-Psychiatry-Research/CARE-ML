@@ -212,7 +212,7 @@ class FeatureSpecifier:
                 )
             ]
 
-        # interval_days = [10, 30, 180]
+        interval_days = [10, 30, 180]
         allowed_nan_value_prop = [0]
 
         visits = self._get_visits_specs(
