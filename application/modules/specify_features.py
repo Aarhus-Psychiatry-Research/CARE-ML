@@ -60,7 +60,7 @@ class FeatureSpecifier:
         ).create_combinations()
 
         return visits
-
+ 
     def _get_admissions_specs(
         self, resolve_multiple, interval_days, allowed_nan_value_prop
     ):
@@ -163,7 +163,7 @@ class FeatureSpecifier:
         self, resolve_multiple, interval_days, allowed_nan_value_prop
     ):
         """Get beroligende medicin specs."""
-        log.info("–––––––– Generating beroligende medicicn specs ––––––––")
+        log.info("–––––––– Generating beroligende medicin specs ––––––––")
 
         beroligende_medicin = PredictorGroupSpec(
             values_loader=("beroligende_medicin",),
@@ -203,9 +203,9 @@ class FeatureSpecifier:
         if self.min_set_for_debug:
             return [
                 PredictorSpec(
-                    values_loader="alat",
-                    lookbehind_days=30,
-                    resolve_multiple_fn="max",
+                    values_loader="f0_disorders",
+                    lookbehind_days=100,
+                    resolve_multiple_fn="bool",
                     fallback=np.nan,
                     allowed_nan_value_prop=0,
                     prefix=self.project_info.prefix.predictor,
