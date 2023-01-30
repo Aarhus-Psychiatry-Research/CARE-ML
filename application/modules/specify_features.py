@@ -1,6 +1,6 @@
 """Feature specification module."""
 import logging
-from sys import prefix  # delete?
+from sys import prefix
 
 import numpy as np
 
@@ -28,6 +28,8 @@ class SpecSet(BaseModel):
 
 
 class FeatureSpecifier:
+    """Specify features based on prediction time."""
+
     def __init__(self, project_info: ProjectInfo, min_set_for_debug: bool = False):
         self.min_set_for_debug = min_set_for_debug
         self.project_info = project_info
@@ -51,6 +53,7 @@ class FeatureSpecifier:
         visits = PredictorGroupSpec(
             values_loader=(
                 "physical_visits",
+                # "physical_visits_to_psychiatry_with_value",
                 "physical_visits_to_somatic",
             ),
             lookbehind_days=interval_days,
@@ -96,6 +99,8 @@ class FeatureSpecifier:
                 "olanzapine",
                 "clozapine",
                 "lithium",
+                "alcohol_abstinence",
+                # "opioid_dependency",
             ),
             lookbehind_days=interval_days,
             resolve_multiple_fn=resolve_multiple,
@@ -196,6 +201,22 @@ class FeatureSpecifier:
 
         return structured_sfi
 
+    # def _get_bvc_physical_threats_specs(
+    #     self, resolve_multiple, interval_days, allowed_nan_value_prop
+    # ):
+    #     """Get Brøset Violence Checklist physical threats specs."""
+    #     log.info("–––––––– Generating BVC physical threats specs ––––––––")
+
+    #     bvc_physical_threats = PredictorGroupSpec(
+    #         values_loader=("broeset_violence_checklist_physical_threats",),
+    #         resolve_multiple_fn=resolve_multiple,
+    #         lookbehind_days=interval_days,
+    #         fallback=[0],
+    #         allowed_nan_value_prop=allowed_nan_value_prop,
+    #     ).create_combinations()
+
+    #     return bvc_physical_threats
+
     def _get_temporal_predictor_specs(self) -> list[PredictorSpec]:
         """Generate predictor spec list."""
         log.info("–––––––– Generating temporal predictor specs ––––––––")
@@ -217,7 +238,7 @@ class FeatureSpecifier:
 
         visits = self._get_visits_specs(
             resolve_multiple=["count"],
-            interval_days=interval_days,
+            interval_days=[30, 180, 365],
             allowed_nan_value_prop=allowed_nan_value_prop,
         )
 
@@ -229,33 +250,39 @@ class FeatureSpecifier:
 
         diagnoses = self._get_diagnoses_specs(
             resolve_multiple=["count", "bool"],
-            interval_days=interval_days,
+            interval_days=[30, 180, 730],
             allowed_nan_value_prop=allowed_nan_value_prop,
         )
 
         medications = self._get_medication_specs(
             resolve_multiple=["count", "bool"],
-            interval_days=interval_days,
+            interval_days=[1, 3, 10, 30, 365, 730],
             allowed_nan_value_prop=allowed_nan_value_prop,
         )
 
         beroligende_medicin = self._get_beroligende_medicin_specs(
             resolve_multiple=["count", "bool"],
-            interval_days=interval_days,
+            interval_days=[1, 3, 7, 10, 30, 180],
             allowed_nan_value_prop=allowed_nan_value_prop,
         )
 
         coercion = self._get_coercion_specs(
             resolve_multiple=["count", "sum", "bool"],
-            interval_days=interval_days,
+            interval_days=[1, 3, 7, 10, 30, 180],
             allowed_nan_value_prop=allowed_nan_value_prop,
         )
 
         structured_sfi = self._get_structured_sfi_specs(
             resolve_multiple=["mean", "max", "min", "change_per_day", "variance"],
-            interval_days=interval_days,
+            interval_days=[1, 3, 10, 30, 180],
             allowed_nan_value_prop=allowed_nan_value_prop,
         )
+
+        # bvc_physical_threats = self._get_bvc_physical_threats_specs(
+        #     resolve_multiple=["count", "bool"],
+        #     interval_days=[1, 3, 10, 30, 180],
+        #     allowed_nan_value_prop=allowed_nan_value_prop,
+        # )
 
         return (
             visits
@@ -265,6 +292,7 @@ class FeatureSpecifier:
             + beroligende_medicin
             + coercion
             + structured_sfi
+            # + bvc_physical_threats
         )
 
     def get_feature_specs(self) -> list[_AnySpec]:

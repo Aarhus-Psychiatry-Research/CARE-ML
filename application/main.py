@@ -4,17 +4,29 @@ import logging
 
 # had to add application - something's up with the paths
 from application.modules.specify_features import FeatureSpecifier
-from application.modules.loaders.load_coercion_df_with_prediction_times_and_outcome import LoadCoercion
-from psycop_feature_generation.application_modules.describe_flattened_dataset import save_flattened_dataset_description_to_disk
-from psycop_feature_generation.application_modules.flatten_dataset import create_flattened_dataset
+from application.modules.loaders.load_coercion_df_with_prediction_times_and_outcome import (
+    LoadCoercion,
+)
+from psycop_feature_generation.application_modules.describe_flattened_dataset import (
+    save_flattened_dataset_description_to_disk,
+)
+from psycop_feature_generation.application_modules.flatten_dataset import (
+    create_flattened_dataset,
+)
 from psycop_feature_generation.application_modules.loggers import init_root_logger
 from psycop_feature_generation.application_modules.project_setup import (
     get_project_info,
     init_wandb,
 )
-from psycop_feature_generation.application_modules.save_dataset_to_disk import split_and_save_dataset_to_disk
-from psycop_feature_generation.application_modules.wandb_utils import wandb_alert_on_exception
-from psycop_feature_generation.loaders.raw.load_moves import load_move_into_rm_for_exclusion
+from psycop_feature_generation.application_modules.save_dataset_to_disk import (
+    split_and_save_dataset_to_disk,
+)
+from psycop_feature_generation.application_modules.wandb_utils import (
+    wandb_alert_on_exception,
+)
+from psycop_feature_generation.loaders.raw.load_moves import (
+    load_move_into_rm_for_exclusion,
+)
 
 log = logging.getLogger()
 
@@ -30,13 +42,11 @@ def main():
 
     flattened_df = create_flattened_dataset(
         feature_specs=feature_specs,
-        prediction_times_df=LoadCoercion.coercion_df(
-            timestamps_only=False
-        ),
+        prediction_times_df=LoadCoercion.coercion_df(timestamps_only=False),
         drop_pred_times_with_insufficient_look_distance=False,
         project_info=project_info,
         quarantine_df=load_move_into_rm_for_exclusion(),
-        quarantine_days=730,
+        quarantine_days=None,
     )
 
     split_and_save_dataset_to_disk(
