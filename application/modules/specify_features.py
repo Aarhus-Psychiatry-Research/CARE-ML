@@ -1,13 +1,11 @@
 """Feature specification module."""
 import logging
-from sys import prefix
 
 import numpy as np
 
 from psycop_feature_generation.application_modules.project_setup import ProjectInfo
 from timeseriesflattener.feature_spec_objects import (
     BaseModel,
-    OutcomeSpec,
     PredictorGroupSpec,
     PredictorSpec,
     StaticSpec,
@@ -112,11 +110,11 @@ class FeatureSpecifier:
 
         return psychiatric_medications
 
-    def _get_skema_1_and_2_specs(
+    def _get_schema_1_and_2_specs(
         self, resolve_multiple, interval_days, allowed_nan_value_prop
     ):
-        """Get coercion specs."""
-        log.info("–––––––– Generating coercion specs ––––––––")
+        """Get schema 1 and schema 2 coercion specs."""
+        log.info("–––––––– Generating schema 1 and schema 2 coercion specs ––––––––")
 
         coercion = PredictorGroupSpec(
             values_loader=(
@@ -136,11 +134,11 @@ class FeatureSpecifier:
 
         return coercion
 
-    def _get_skema_3_specs(
+    def _get_schema_3_specs(
         self, resolve_multiple, interval_days, allowed_nan_value_prop
     ):
-        """Get coercion specs."""
-        log.info("–––––––– Generating coercion specs ––––––––")
+        """Get schema 3 coercion specs."""
+        log.info("–––––––– Generating schema 3 coercion specs ––––––––")
 
         coercion = PredictorGroupSpec(
             values_loader=(
@@ -158,11 +156,11 @@ class FeatureSpecifier:
 
         return coercion
 
-    def _get_beroligende_medicin_specs(
+    def _get_forced_medication_specs(
         self, resolve_multiple, interval_days, allowed_nan_value_prop
     ):
-        """Get beroligende medicin specs."""
-        log.info("–––––––– Generating beroligende medicin specs ––––––––")
+        """Get forced medication coercion specs."""
+        log.info("–––––––– Generating forced medication coercion specs ––––––––")
 
         beroligende_medicin = PredictorGroupSpec(
             values_loader=("beroligende_medicin",),
@@ -212,40 +210,40 @@ class FeatureSpecifier:
             ]
 
         resolve_multiple = ["bool", "count"]
-        interval_days = [1, 3, 7, 10, 30, 180, 365, 730]
+        interval_days = [10, 30, 180, 365, 730]
         allowed_nan_value_prop = [0]
 
         visits = self._get_visits_specs(
-            resolve_multiple=resolve_multiple,
-            interval_days=[10, 30, 180, 365, 730],
+            resolve_multiple=resolve_multiple + ["sum"],
+            interval_days=interval_days,
             allowed_nan_value_prop=allowed_nan_value_prop,
         )
 
         diagnoses = self._get_diagnoses_specs(
             resolve_multiple=["bool"],
-            interval_days=[10, 30, 180, 365, 730],
+            interval_days=interval_days,
             allowed_nan_value_prop=allowed_nan_value_prop,
         )
 
         medications = self._get_medication_specs(
             resolve_multiple=resolve_multiple,
-            interval_days=interval_days,
+            interval_days=[1, 3, 7] + interval_days,
             allowed_nan_value_prop=allowed_nan_value_prop,
         )
 
-        coercion = self._get_skema_1_and_2_specs(
+        schema_1_schema_2_coercion = self._get_schema_1_and_2_specs(
             resolve_multiple=resolve_multiple + ["sum"],
-            interval_days=interval_days,
+            interval_days=[1, 3, 7] + interval_days,
             allowed_nan_value_prop=allowed_nan_value_prop,
         )
 
-        coercion = self._get_skema_3_specs(
+        schema_3_coercion = self._get_schema_3_specs(
             resolve_multiple=resolve_multiple + ["sum"],
             interval_days=[730],
             allowed_nan_value_prop=allowed_nan_value_prop,
         )
 
-        beroligende_medicin = self._get_beroligende_medicin_specs(
+        forced_medication_coercion = self._get_forced_medication_specs(
             resolve_multiple=resolve_multiple,
             interval_days=[730],
             allowed_nan_value_prop=allowed_nan_value_prop,
@@ -261,8 +259,9 @@ class FeatureSpecifier:
             visits
             + medications
             + diagnoses
-            + beroligende_medicin
-            + coercion
+            + schema_1_schema_2_coercion
+            + schema_3_coercion
+            + forced_medication_coercion
             + structured_sfi
         )
 
