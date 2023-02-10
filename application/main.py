@@ -45,8 +45,6 @@ def main():
         prediction_times_df=LoadCoercion.coercion_df(timestamps_only=False),
         drop_pred_times_with_insufficient_look_distance=False,
         project_info=project_info,
-        quarantine_df=load_move_into_rm_for_exclusion(),
-        quarantine_days=None,
     )
 
     split_and_save_dataset_to_disk(
