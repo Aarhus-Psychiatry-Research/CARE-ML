@@ -1,13 +1,11 @@
 """Feature specification module."""
 import logging
-from sys import prefix
 
 import numpy as np
 
 from psycop_feature_generation.application_modules.project_setup import ProjectInfo
 from timeseriesflattener.feature_spec_objects import (
     BaseModel,
-    OutcomeSpec,
     PredictorGroupSpec,
     PredictorSpec,
     StaticSpec,
@@ -23,8 +21,6 @@ class SpecSet(BaseModel):
 
     temporal_predictors: list[PredictorSpec]
     static_predictors: list[StaticSpec]
-    outcomes: list[OutcomeSpec]
-    metadata: list[_AnySpec]
 
 
 class FeatureSpecifier:
@@ -53,7 +49,7 @@ class FeatureSpecifier:
         visits = PredictorGroupSpec(
             values_loader=(
                 "physical_visits",
-                # "physical_visits_to_psychiatry_with_value",
+                "physical_visits_to_psychiatry",
                 "physical_visits_to_somatic",
             ),
             lookbehind_days=interval_days,
@@ -63,52 +59,6 @@ class FeatureSpecifier:
         ).create_combinations()
 
         return visits
-
-    def _get_admissions_specs(
-        self, resolve_multiple, interval_days, allowed_nan_value_prop
-    ):
-        """Get admissions specs."""
-        log.info("–––––––– Generating admissions specs ––––––––")
-
-        admissions = PredictorGroupSpec(
-            values_loader=(
-                "admissions",
-                "admissions_to_psychiatry",
-                "admissions_to_somatic",
-            ),
-            lookbehind_days=interval_days,
-            resolve_multiple_fn=resolve_multiple,
-            fallback=[0],
-            allowed_nan_value_prop=allowed_nan_value_prop,
-        ).create_combinations()
-
-        return admissions
-
-    def _get_medication_specs(
-        self, resolve_multiple, interval_days, allowed_nan_value_prop
-    ):
-        """Get medication specs."""
-        log.info("–––––––– Generating medication specs ––––––––")
-
-        psychiatric_medications = PredictorGroupSpec(
-            values_loader=(
-                "antipsychotics",
-                "anxiolytics",
-                "hypnotics and sedatives",
-                "antidepressives",
-                "olanzapine",
-                "clozapine",
-                "lithium",
-                "alcohol_abstinence",
-                # "opioid_dependency",
-            ),
-            lookbehind_days=interval_days,
-            resolve_multiple_fn=resolve_multiple,
-            fallback=[0],
-            allowed_nan_value_prop=allowed_nan_value_prop,
-        ).create_combinations()
-
-        return psychiatric_medications
 
     def _get_diagnoses_specs(
         self, resolve_multiple, interval_days, allowed_nan_value_prop
@@ -136,20 +86,62 @@ class FeatureSpecifier:
 
         return psychiatric_diagnoses
 
-    def _get_coercion_specs(
+    def _get_medication_specs(
         self, resolve_multiple, interval_days, allowed_nan_value_prop
     ):
-        """Get coercion specs."""
-        log.info("–––––––– Generating coercion specs ––––––––")
+        """Get medication specs."""
+        log.info("–––––––– Generating medication specs ––––––––")
+
+        psychiatric_medications = PredictorGroupSpec(
+            values_loader=(
+                "antipsychotics",
+                "anxiolytics",
+                "hypnotics and sedatives",
+                "antidepressives",
+                "lithium",
+                "alcohol_abstinence",
+                "opioid_dependency",
+            ),
+            lookbehind_days=interval_days,
+            resolve_multiple_fn=resolve_multiple,
+            fallback=[0],
+            allowed_nan_value_prop=allowed_nan_value_prop,
+        ).create_combinations()
+
+        return psychiatric_medications
+
+    def _get_schema_1_and_2_specs(
+        self, resolve_multiple, interval_days, allowed_nan_value_prop
+    ):
+        """Get schema 1 and schema 2 coercion specs."""
+        log.info("–––––––– Generating schema 1 and schema 2 coercion specs ––––––––")
 
         coercion = PredictorGroupSpec(
             values_loader=(
                 "skema_1",
+                "tvangsindlaeggelse",
                 "tvangstilbageholdelse",
-                "skema_2",
+                "skema_2_without_nutrition",
                 "medicinering",
                 "ect",
                 "af_legemlig_lidelse",
+            ),
+            resolve_multiple_fn=resolve_multiple,
+            lookbehind_days=interval_days,
+            fallback=[0],
+            allowed_nan_value_prop=allowed_nan_value_prop,
+        ).create_combinations()
+
+        return coercion
+
+    def _get_schema_3_specs(
+        self, resolve_multiple, interval_days, allowed_nan_value_prop
+    ):
+        """Get schema 3 coercion specs."""
+        log.info("–––––––– Generating schema 3 coercion specs ––––––––")
+
+        coercion = PredictorGroupSpec(
+            values_loader=(
                 "skema_3",
                 "fastholden",
                 "baelte",
@@ -164,11 +156,11 @@ class FeatureSpecifier:
 
         return coercion
 
-    def _get_beroligende_medicin_specs(
+    def _get_forced_medication_specs(
         self, resolve_multiple, interval_days, allowed_nan_value_prop
     ):
-        """Get beroligende medicin specs."""
-        log.info("–––––––– Generating beroligende medicin specs ––––––––")
+        """Get forced medication coercion specs."""
+        log.info("–––––––– Generating forced medication coercion specs ––––––––")
 
         beroligende_medicin = PredictorGroupSpec(
             values_loader=("beroligende_medicin",),
@@ -201,22 +193,6 @@ class FeatureSpecifier:
 
         return structured_sfi
 
-    # def _get_bvc_physical_threats_specs(
-    #     self, resolve_multiple, interval_days, allowed_nan_value_prop
-    # ):
-    #     """Get Brøset Violence Checklist physical threats specs."""
-    #     log.info("–––––––– Generating BVC physical threats specs ––––––––")
-
-    #     bvc_physical_threats = PredictorGroupSpec(
-    #         values_loader=("broeset_violence_checklist_physical_threats",),
-    #         resolve_multiple_fn=resolve_multiple,
-    #         lookbehind_days=interval_days,
-    #         fallback=[0],
-    #         allowed_nan_value_prop=allowed_nan_value_prop,
-    #     ).create_combinations()
-
-    #     return bvc_physical_threats
-
     def _get_temporal_predictor_specs(self) -> list[PredictorSpec]:
         """Generate predictor spec list."""
         log.info("–––––––– Generating temporal predictor specs ––––––––")
@@ -233,75 +209,66 @@ class FeatureSpecifier:
                 )
             ]
 
-        interval_days = [10, 30, 180]
+        resolve_multiple = ["bool", "count"]
+        interval_days = [10, 30, 180, 365, 730]
         allowed_nan_value_prop = [0]
 
         visits = self._get_visits_specs(
-            resolve_multiple=["count"],
-            interval_days=[30, 180, 365],
-            allowed_nan_value_prop=allowed_nan_value_prop,
-        )
-
-        admissions = self._get_admissions_specs(
-            resolve_multiple=["count", "sum"],
-            interval_days=[10, 30, 180],
+            resolve_multiple=resolve_multiple + ["sum"],
+            interval_days=interval_days,
             allowed_nan_value_prop=allowed_nan_value_prop,
         )
 
         diagnoses = self._get_diagnoses_specs(
-            resolve_multiple=["count", "bool"],
-            interval_days=[30, 180, 730],
+            resolve_multiple=["bool"],
+            interval_days=interval_days,
             allowed_nan_value_prop=allowed_nan_value_prop,
         )
 
         medications = self._get_medication_specs(
-            resolve_multiple=["count", "bool"],
-            interval_days=[1, 3, 10, 30, 365, 730],
+            resolve_multiple=resolve_multiple,
+            interval_days=[1, 3, 7] + interval_days,
             allowed_nan_value_prop=allowed_nan_value_prop,
         )
 
-        beroligende_medicin = self._get_beroligende_medicin_specs(
-            resolve_multiple=["count", "bool"],
-            interval_days=[1, 3, 7, 10, 30, 180],
+        schema_1_schema_2_coercion = self._get_schema_1_and_2_specs(
+            resolve_multiple=resolve_multiple + ["sum"],
+            interval_days=[1, 3, 7] + interval_days,
             allowed_nan_value_prop=allowed_nan_value_prop,
         )
 
-        coercion = self._get_coercion_specs(
-            resolve_multiple=["count", "sum", "bool"],
-            interval_days=[1, 3, 7, 10, 30, 180],
+        schema_3_coercion = self._get_schema_3_specs(
+            resolve_multiple=resolve_multiple + ["sum"],
+            interval_days=[730],
+            allowed_nan_value_prop=allowed_nan_value_prop,
+        )
+
+        forced_medication_coercion = self._get_forced_medication_specs(
+            resolve_multiple=resolve_multiple,
+            interval_days=[730],
             allowed_nan_value_prop=allowed_nan_value_prop,
         )
 
         structured_sfi = self._get_structured_sfi_specs(
             resolve_multiple=["mean", "max", "min", "change_per_day", "variance"],
-            interval_days=[1, 3, 10, 30, 180],
+            interval_days=interval_days,
             allowed_nan_value_prop=allowed_nan_value_prop,
         )
 
-        # bvc_physical_threats = self._get_bvc_physical_threats_specs(
-        #     resolve_multiple=["count", "bool"],
-        #     interval_days=[1, 3, 10, 30, 180],
-        #     allowed_nan_value_prop=allowed_nan_value_prop,
-        # )
-
         return (
             visits
-            + admissions
             + medications
             + diagnoses
-            + beroligende_medicin
-            + coercion
+            + schema_1_schema_2_coercion
+            + schema_3_coercion
+            + forced_medication_coercion
             + structured_sfi
-            # + bvc_physical_threats
         )
 
     def get_feature_specs(self) -> list[_AnySpec]:
         """Get a spec set."""
 
         if self.min_set_for_debug:
-            return (
-                self._get_temporal_predictor_specs()
-                # + self._get_outcome_specs()
-            )
+            return self._get_temporal_predictor_specs()
 
         return self._get_temporal_predictor_specs() + self._get_static_predictor_specs()

@@ -7,16 +7,17 @@ import pandas as pd
 from psycop_feature_generation.loaders.raw import sql_load
 from wasabi import msg
 
+
 class LoadCoercion:
     """Class for loading data frames with prediction times and outcomes for
     coercion data."""
-    
+
     def coercion_df(
         timestamps_only: bool = True,
-        ) -> pd.DataFrame:
+    ) -> pd.DataFrame:
 
         df = sql_load(
-            "SELECT * FROM [fct].[psycop_coercion_within_2_days]",
+            "SELECT * FROM [fct].[psycop_coercion_within_2_days_feb2022]",
             database="USR_PS_FORSK",
             chunksize=None,
         )
