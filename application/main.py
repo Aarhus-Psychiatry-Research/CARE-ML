@@ -1,10 +1,13 @@
 """Main feature generation."""
 
 import logging
+import sys
+from pathlib import Path
+import wandb
 
 # had to add application - something's up with the paths
-from application.modules.specify_features import FeatureSpecifier
-from application.modules.loaders.load_coercion_df_with_prediction_times_and_outcome import (
+from modules.specify_features import FeatureSpecifier
+from modules.loaders.load_coercion_df_with_prediction_times_and_outcome import (
     LoadCoercion,
 )
 from psycop_feature_generation.application_modules.describe_flattened_dataset import (
@@ -16,16 +19,12 @@ from psycop_feature_generation.application_modules.flatten_dataset import (
 from psycop_feature_generation.application_modules.loggers import init_root_logger
 from psycop_feature_generation.application_modules.project_setup import (
     get_project_info,
-    init_wandb,
 )
 from psycop_feature_generation.application_modules.save_dataset_to_disk import (
     split_and_save_dataset_to_disk,
 )
 from psycop_feature_generation.application_modules.wandb_utils import (
     wandb_alert_on_exception,
-)
-from psycop_feature_generation.loaders.raw.load_moves import (
-    load_move_into_rm_for_exclusion,
 )
 
 log = logging.getLogger()
@@ -54,6 +53,7 @@ def main():
 
     save_flattened_dataset_description_to_disk(
         project_info=project_info,
+        feature_specs=feature_specs,
     )
 
 
@@ -65,7 +65,7 @@ if __name__ == "__main__":
     project_info = get_project_info(
         project_name="coercion",
     )
-
+    project_info
     init_root_logger(project_info=project_info)
 
     log.info(f"Stdout level is {logging.getLevelName(log.level)}")
@@ -74,8 +74,20 @@ if __name__ == "__main__":
     # Use wandb to keep track of your dataset generations
     # Makes it easier to find paths on wandb, as well as
     # allows monitoring and automatic slack alert on failure
-    init_wandb(
-        project_info=project_info,
+    # allows monitoring and automatic slack alert on failure
+    if sys.platform == "win32":
+        (Path(__file__).resolve().parents[1] / "wandb" / "debug-cli.onerm").mkdir(
+            exist_ok=True,
+            parents=True,
+        )
+
+    wandb.init(
+        project=f"{project_info.project_name}-feature-generation",
+        entity="psycop",
+        config={
+            "feature_set_path": project_info.feature_set_path,
+        },
+        mode="dryrun",
     )
 
     main()
