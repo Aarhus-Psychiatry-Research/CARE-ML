@@ -121,6 +121,8 @@ class FeatureSpecifier:
                 "skema_1",
                 "tvangsindlaeggelse",
                 "tvangstilbageholdelse",
+                "paa_grund_af_farlighed",  # røde papirer
+                "af_helbredsmaessige_grunde",  # gule papirer
                 "skema_2_without_nutrition",
                 "medicinering",
                 "ect",
@@ -130,6 +132,35 @@ class FeatureSpecifier:
             lookbehind_days=interval_days,
             fallback=[0],
             allowed_nan_value_prop=allowed_nan_value_prop,
+        ).create_combinations()
+
+        return coercion
+
+    def _get_schema_1_and_2__current_status_specs(
+        self, resolve_multiple, interval_days, allowed_nan_value_prop
+    ):
+        """Get current status of schema 1 and schema 2 coercion."""
+        log.info(
+            "–––––––– Generating schema 1 and schema 2 current status specs ––––––––"
+        )
+
+        coercion = PredictorGroupSpec(
+            values_loader=(
+                "skema_1",
+                "tvangsindlaeggelse",
+                "tvangstilbageholdelse",
+                "paa_grund_af_farlighed",  # røde papirer
+                "af_helbredsmaessige_grunde",  # gule papirer
+                "skema_2_without_nutrition",
+                "medicinering",
+                "ect",
+                "af_legemlig_lidelse",
+            ),
+            resolve_multiple_fn=resolve_multiple,
+            lookbehind_days=interval_days,
+            fallback=[0],
+            allowed_nan_value_prop=allowed_nan_value_prop,
+            loader_kwargs=[{"unpack_days": True}],
         ).create_combinations()
 
         return coercion
@@ -237,6 +268,14 @@ class FeatureSpecifier:
             allowed_nan_value_prop=allowed_nan_value_prop,
         )
 
+        schema_1_schema_2_coercion_current_status = (
+            self._get_schema_1_and_2__current_status_specs(
+                resolve_multiple=["bool"],
+                interval_days=[1, 2, 3],
+                allowed_nan_value_prop=allowed_nan_value_prop,
+            )
+        )
+
         schema_3_coercion = self._get_schema_3_specs(
             resolve_multiple=resolve_multiple + ["sum"],
             interval_days=[730],
@@ -260,6 +299,7 @@ class FeatureSpecifier:
             + medications
             + diagnoses
             + schema_1_schema_2_coercion
+            + schema_1_schema_2_coercion_current_status
             + schema_3_coercion
             + forced_medication_coercion
             + structured_sfi
