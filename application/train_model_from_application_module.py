@@ -17,6 +17,7 @@ from psycop_model_training.training.train_and_predict import CONFIG_PATH
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 CONFIG_PATH = PROJECT_ROOT / "application" / "config"
+WANDB_LOG_PATH = PROJECT_ROOT / "wandb" / "debug-cli.onerm"
 
 
 @hydra.main(
@@ -26,6 +27,9 @@ CONFIG_PATH = PROJECT_ROOT / "application" / "config"
 )
 def main(cfg: DictConfig):
     """Main."""
+    if not Path.exists(WANDB_LOG_PATH):
+        WANDB_LOG_PATH.mkdir(parents=True, exist_ok=True)
+
     if not isinstance(cfg, FullConfigSchema):
         cfg = convert_omegaconf_to_pydantic_object(cfg)
 
