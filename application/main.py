@@ -86,7 +86,6 @@ if __name__ == "__main__":
         config={
             "feature_set_path": project_info.feature_set_path,
         },
-        mode="dryrun",
     )
 
     main()
