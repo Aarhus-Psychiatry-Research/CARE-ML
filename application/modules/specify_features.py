@@ -290,7 +290,7 @@ class FeatureSpecifier:
 
         structured_sfi = self._get_structured_sfi_specs(
             resolve_multiple=["mean", "max", "min", "change_per_day", "variance"],
-            interval_days=interval_days,
+            interval_days=[1, 3, 7] + interval_days,
             allowed_nan_value_prop=allowed_nan_value_prop,
         )
 
