@@ -136,10 +136,10 @@ class FeatureSpecifier:
 
         return coercion
 
-    def _get_schema_1_and_2__current_status_specs(
+    def _get_schema_1_and_2_current_status_specs(
         self, resolve_multiple, interval_days, allowed_nan_value_prop
     ):
-        """Get current status of schema 1 and schema 2 coercion."""
+        """Get "current" status of schema 1 and schema 2 coercion."""
         log.info(
             "–––––––– Generating schema 1 and schema 2 current status specs ––––––––"
         )
@@ -160,7 +160,7 @@ class FeatureSpecifier:
             lookbehind_days=interval_days,
             fallback=[0],
             allowed_nan_value_prop=allowed_nan_value_prop,
-            loader_kwargs=[{"unpack_days": True}],
+            loader_kwargs=[{"unpack_to_intervals": True}],
         ).create_combinations()
 
         return coercion
@@ -264,12 +264,12 @@ class FeatureSpecifier:
 
         schema_1_schema_2_coercion = self._get_schema_1_and_2_specs(
             resolve_multiple=resolve_multiple + ["sum"],
-            interval_days=[1, 3, 7] + interval_days,
+            interval_days=[7] + interval_days,
             allowed_nan_value_prop=allowed_nan_value_prop,
         )
 
         schema_1_schema_2_coercion_current_status = (
-            self._get_schema_1_and_2__current_status_specs(
+            self._get_schema_1_and_2_current_status_specs(
                 resolve_multiple=["bool"],
                 interval_days=[1, 2, 3],
                 allowed_nan_value_prop=allowed_nan_value_prop,
