@@ -17,7 +17,7 @@ class LoadCoercion:
     ) -> pd.DataFrame:
 
         df = sql_load(
-            "SELECT * FROM [fct].[psycop_coercion_within_2_days_feb2022]",
+            query="SELECT [dw_ek_borger],[timestamp_admission],[outcome_timestamp],[admission_count_days],[timestamp],[outcome_coercion_bool_within_2_days],[outcome_coercion_type_within_2_days],[outcome_mechanical_restraint_bool_within_2_days] FROM [fct].[psycop_coercion_within_2_days_feb2022]",
             database="USR_PS_FORSK",
             chunksize=None,
         )
