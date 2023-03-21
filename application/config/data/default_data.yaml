@@ -2,7 +2,7 @@
 data:
   # General config
   n_training_samples: null
-  dir: E:\shared_resources\coercion\feature_sets\psycop_coercion_adminsignbe_features_2023_03_14_15_49
+  dir: E:\shared_resources\coercion\feature_sets\psycop_coercion_adminsignbe_features_2023_03_15_10_41
   suffix: parquet
 
   # Feature specs
@@ -11,9 +11,9 @@ data:
 
   col_name:
     pred_timestamp: timestamp
-    outcome_timestamp: timestamp_admission # outcome_timestamp
-    id: dw_ek_borger
+    outcome_timestamp: outcome_timestamp
+    id: adm_id
     age: pred_age_in_years
-    exclusion_timestamp: timestamp_admission
+    exclusion_timestamp: 
     custom_columns:
       # - eval_hba1c_within_9999_days_count_fallback_nan
