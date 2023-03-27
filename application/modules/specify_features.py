@@ -8,6 +8,7 @@ from timeseriesflattener.feature_spec_objects import (
     BaseModel,
     PredictorGroupSpec,
     PredictorSpec,
+    TextPredictorSpec,
     StaticSpec,
     _AnySpec,
 )
@@ -241,19 +242,22 @@ class FeatureSpecifier:
 
         return structured_sfi
 
-    def _get_text_specs(self, resolve_multiple, interval_days, allowed_nan_value_prop):
+    def _get_text_specs(self, interval_days):
         """Get text specs"""
         log.info("–––––––– Generating text specs ––––––––")
 
-        text = PredictorGroupSpec(
+        text = TextPredictorSpec(
             values_loader=(
                 "all_notes",
                 "aktuelt_psykisk",
             ),
-            resolve_multiple_fn=resolve_multiple,
             lookbehind_days=interval_days,
-            fallback=[0],
-            allowed_nan_value_prop=allowed_nan_value_prop,
+            fallback=[np.nan],
+            resolve_multiple_fn="concatenate",
+            # feature_name="text-st",
+            # input_col_name_override="text",
+            # embedding_fn=sentence_transformers_embedding,
+            # embedding_fn_kwargs={"model_name": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"},
         ).create_combinations()
 
         return text
@@ -334,11 +338,7 @@ class FeatureSpecifier:
             allowed_nan_value_prop=allowed_nan_value_prop,
         )
 
-        text = self._get_structured_sfi_specs(
-            resolve_multiple=["concatenate"],
-            interval_days=[1, 3, 7] + interval_days,
-            allowed_nan_value_prop=allowed_nan_value_prop,
-        )
+        text = self._get_text_specs(interval_days=[1, 3, 7] + interval_days)
 
         return (
             latest_weight_height_bmi
