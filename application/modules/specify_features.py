@@ -50,7 +50,7 @@ class FeatureSpecifier:
         weight_height_bmi = PredictorGroupSpec(
             values_loader=["weight_in_kg", "height_in_cm", "bmi"],
             lookbehind_days=interval_days,
-            resolve_multiple_fn=["latest"],
+            resolve_multiple_fn=resolve_multiple,
             fallback=[np.nan],
             allowed_nan_value_prop=allowed_nan_value_prop,
             prefix=self.project_info.prefix.predictor,
@@ -236,7 +236,7 @@ class FeatureSpecifier:
             ),
             resolve_multiple_fn=resolve_multiple,
             lookbehind_days=interval_days,
-            fallback=[0],
+            fallback=[np.nan],
             allowed_nan_value_prop=allowed_nan_value_prop,
         ).create_combinations()
 
