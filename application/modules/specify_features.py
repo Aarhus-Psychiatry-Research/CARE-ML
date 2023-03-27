@@ -224,6 +224,23 @@ class FeatureSpecifier:
 
         return structured_sfi
 
+    def _get_text_specs(self, resolve_multiple, interval_days, allowed_nan_value_prop):
+        """Get text specs"""
+        log.info("–––––––– Generating text specs ––––––––")
+
+        text = PredictorGroupSpec(
+            values_loader=(
+                "all_notes",
+                "aktuelt_psykisk",
+            ),
+            resolve_multiple_fn=resolve_multiple,
+            lookbehind_days=interval_days,
+            fallback=[0],
+            allowed_nan_value_prop=allowed_nan_value_prop,
+        ).create_combinations()
+
+        return text
+
     def _get_temporal_predictor_specs(self) -> list[PredictorSpec]:
         """Generate predictor spec list."""
         log.info("–––––––– Generating temporal predictor specs ––––––––")
@@ -294,6 +311,12 @@ class FeatureSpecifier:
             allowed_nan_value_prop=allowed_nan_value_prop,
         )
 
+        text = self._get_structured_sfi_specs(
+            resolve_multiple=["concatenate"],
+            interval_days=[1, 3, 7] + interval_days,
+            allowed_nan_value_prop=allowed_nan_value_prop,
+        )
+
         return (
             visits
             + medications
@@ -303,6 +326,7 @@ class FeatureSpecifier:
             + schema_3_coercion
             + forced_medication_coercion
             + structured_sfi
+            + text
         )
 
     def get_feature_specs(self) -> list[_AnySpec]:
