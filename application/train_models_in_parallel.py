@@ -20,7 +20,7 @@ def main(
     """Main."""
     # Load dataset without dropping any rows for inferring
     # which look distances to grid search over
-    train_df = DataLoader(cfg=cfg).load_dataset_from_dir(split_names="train")
+    train_df = DataLoader(data_cfg=cfg.data).load_dataset_from_dir(split_names="train")
 
     trainer_specs = SearchSpaceInferrer(
         cfg=cfg,
