@@ -40,6 +40,23 @@ class FeatureSpecifier:
             ),
         ]
 
+    def _get_weight_and_height_specs(
+        self, resolve_multiple, interval_days, allowed_nan_value_prop
+    ):
+        """Get weight and height specs."""
+        log.info("–––––––– Generating weight and height specs ––––––––")
+
+        weight_height_bmi = PredictorGroupSpec(
+            values_loader=["weight_in_kg", "height_in_cm", "bmi"],
+            lookbehind_days=interval_days,
+            resolve_multiple_fn=["latest"],
+            fallback=[np.nan],
+            allowed_nan_value_prop=allowed_nan_value_prop,
+            prefix=self.project_info.prefix.predictor,
+        ).create_combinations()
+
+        return weight_height_bmi
+
     def _get_visits_specs(
         self, resolve_multiple, interval_days, allowed_nan_value_prop
     ):
@@ -244,6 +261,12 @@ class FeatureSpecifier:
         interval_days = [10, 30, 180, 365, 730]
         allowed_nan_value_prop = [0]
 
+        latest_weight_height_bmi = self._get_weight_and_height_specs(
+            resolve_multiple=["latest"],
+            interval_days=interval_days,
+            allowed_nan_value_prop=allowed_nan_value_prop,
+        )
+
         visits = self._get_visits_specs(
             resolve_multiple=resolve_multiple + ["sum"],
             interval_days=interval_days,
@@ -295,7 +318,8 @@ class FeatureSpecifier:
         )
 
         return (
-            visits
+            latest_weight_height_bmi
+            + visits
             + medications
             + diagnoses
             + schema_1_schema_2_coercion
