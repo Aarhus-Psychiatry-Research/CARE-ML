@@ -4,6 +4,12 @@ import logging
 import numpy as np
 
 from psycop_feature_generation.application_modules.project_setup import ProjectInfo
+
+from application.modules.text_feature_models.load_text_models import (
+    _load_bow_model,
+    _load_tfidf_model,
+)
+
 from timeseriesflattener.feature_spec_objects import (
     BaseModel,
     PredictorGroupSpec,
@@ -13,6 +19,7 @@ from timeseriesflattener.feature_spec_objects import (
     _AnySpec,
 )
 
+from timeseriesflattener.text_embedding_functions import sklearn_embedding
 
 log = logging.getLogger(__name__)
 
@@ -242,26 +249,6 @@ class FeatureSpecifier:
 
         return structured_sfi
 
-    def _get_text_specs(self, interval_days):
-        """Get text specs"""
-        log.info("–––––––– Generating text specs ––––––––")
-
-        text = TextPredictorSpec(
-            values_loader=(
-                "all_notes",
-                "aktuelt_psykisk",
-            ),
-            lookbehind_days=interval_days,
-            fallback=[np.nan],
-            resolve_multiple_fn="concatenate",
-            # feature_name="text-st",
-            # input_col_name_override="text",
-            # embedding_fn=sentence_transformers_embedding,
-            # embedding_fn_kwargs={"model_name": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"},
-        ).create_combinations()
-
-        return text
-
     def _get_temporal_predictor_specs(self) -> list[PredictorSpec]:
         """Generate predictor spec list."""
         log.info("–––––––– Generating temporal predictor specs ––––––––")
@@ -338,8 +325,6 @@ class FeatureSpecifier:
             allowed_nan_value_prop=allowed_nan_value_prop,
         )
 
-        text = self._get_text_specs(interval_days=[1, 3, 7] + interval_days)
-
         return (
             latest_weight_height_bmi
             + visits
@@ -350,7 +335,6 @@ class FeatureSpecifier:
             + schema_3_coercion
             + forced_medication_coercion
             + structured_sfi
-            + text
         )
 
     def get_feature_specs(self) -> list[_AnySpec]:
@@ -360,3 +344,99 @@ class FeatureSpecifier:
             return self._get_temporal_predictor_specs()
 
         return self._get_temporal_predictor_specs() + self._get_static_predictor_specs()
+
+
+class TextFeatureSpecifier:
+    """Specify features based on prediction time."""
+
+    def __init__(self, project_info: ProjectInfo, min_set_for_debug: bool = False):
+        self.min_set_for_debug = min_set_for_debug
+        self.project_info = project_info
+
+    def _get_bow_specs(self, resolve_multiple, interval_days):
+        """Get tfidf specs"""
+        log.info("–––––––– Generating tfidf specs ––––––––")
+
+        bow_model = _load_bow_model()
+
+        bow = TextPredictorSpec(
+            values_loader=(
+                "all_notes",
+                "aktuelt_psykisk",
+            ),
+            lookbehind_days=interval_days,
+            fallback=[np.nan],
+            resolve_multiple_fn=resolve_multiple,
+            feature_name="text-bow",
+            input_col_name_override="text",
+            embedding_fn=sklearn_embedding,
+            embedding_fn_kwargs={
+                "model": bow_model
+            },  # bow model trained on psycop cohort
+        ).create_combinations()
+
+        return bow
+
+    def _get_tfidf_specs(self, resolve_multiple, interval_days):
+        """Get tfidf specs"""
+        log.info("–––––––– Generating tfidf specs ––––––––")
+
+        tfidf_model = _load_tfidf_model()
+
+        tfidf = TextPredictorSpec(
+            values_loader=(
+                "all_notes",
+                "aktuelt_psykisk",
+            ),
+            lookbehind_days=interval_days,
+            fallback=[np.nan],
+            resolve_multiple_fn=resolve_multiple,
+            feature_name="text-tfidf",
+            embedding_fn=sklearn_embedding,
+            embedding_fn_kwargs={
+                "model": tfidf_model
+            },  # bow model trained on psycop cohort
+        ).create_combinations()
+
+        return tfidf
+
+    def _get_text_predictor_specs(self) -> list[PredictorSpec]:
+        """Generate text predictor spec list."""
+        log.info("–––––––– Generating text predictor specs ––––––––")
+
+        if self.min_set_for_debug:
+
+            tfidf_model = _load_tfidf_model()
+
+            return [
+                TextPredictorSpec(
+                    values_loader="aktuelt_psykisk",
+                    lookbehind_days=100,
+                    resolve_multiple_fn="concatenate",
+                    fallback=[np.nan],
+                    features_name="text_tfidf",
+                    embedding_fn=sklearn_embedding,
+                    embedding_fn_kwargs={"model": tfidf_model},
+                )
+            ]
+
+        resolve_multiple = "concatenate"
+        interval_days = [10, 30, 180, 365, 730]
+
+        bow = self._get_tfidf_specs(
+            resolve_multiple=resolve_multiple, interval_days=interval_days
+        )
+
+        tfidf = self._get_tfidf_specs(
+            resolve_multiple=resolve_multiple, interval_days=interval_days
+        )
+
+        return bow + tfidf
+
+    def get_feature_specs(self) -> list[_AnySpec]:
+        """Get a spec set."""
+
+        if self.min_set_for_debug:
+            return self._get_text_predictor_specs()
+
+        return self._get_text_predictor_specs()
