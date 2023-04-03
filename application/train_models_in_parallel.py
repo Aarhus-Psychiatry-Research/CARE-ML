@@ -9,7 +9,7 @@ from psycop_model_training.application_modules.process_manager_setup import setu
 from psycop_model_training.application_modules.trainer_spawner import spawn_trainers
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.data_loader.data_loader import DataLoader
-from psycopmlutils.wandb.wandb_try_except_decorator import wandb_alert_on_exception
+from psycop_ml_utils.wandb.wandb_try_except_decorator import wandb_alert_on_exception
 
 
 @wandb_alert_on_exception
