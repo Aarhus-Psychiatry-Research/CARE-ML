@@ -32,7 +32,7 @@ def main(cfg: DictConfig):
     if not isinstance(cfg, FullConfigSchema):
         cfg = convert_omegaconf_to_pydantic_object(cfg)
 
-    return train_model(cfg=cfg, artifacts=None)
+    return train_model(cfg=cfg)
 
 
 if __name__ == "__main__":

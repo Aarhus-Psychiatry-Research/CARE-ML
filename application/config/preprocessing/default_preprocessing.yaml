@@ -3,7 +3,7 @@ preprocessing:
   pre_split:
     convert_to_boolean: false
     convert_booleans_to_int: true
-    negative_values_to_nan: false
+    negative_values_to_nan: true
     drop_datetime_predictor_columns: true
     convert_datetimes_to_ordinal: false
     drop_patient_if_exclusion_before_date: false
@@ -16,7 +16,7 @@ preprocessing:
     imputation_method: most_frequent
     scaling: z-score-normalisation
     feature_selection:
-      name: "null"
+      name: "lsvc"
       params:
         # percentile: 20 # (int): Percent of features to keep. Defaults to 10.
 
@@ -26,7 +26,7 @@ hydra:
     params:
       ++preprocessing.post_split.imputation_method: choice("most_frequent", "mean", "median", "null")
       ++preprocessing.post_split.scaling: choice("z-score-normalization", "null")
-      # ++preprocessing.post_split.feature_selection.name: choice("chi2", "null")
+      ++preprocessing.post_split.feature_selection.name: choice("chi2", "null")
       ++preprocessing.post_split.feature_selection.params.percentile: int(tag(log, interval(1, 90)))
       ++preprocessing.pre_split.lookbehind_combination: choice([1, 2, 3, 7, 10, 30, 180, 365, 730], [1, 7, 30], [1, 2, 7], [1, 7, 30, 180, 365, 730], [1, 7, 30, 365], [365], [180], [30], [7], [1])
       
