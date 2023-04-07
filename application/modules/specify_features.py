@@ -4,12 +4,11 @@ import logging
 import numpy as np
 
 from psycop_feature_generation.application_modules.project_setup import ProjectInfo
-
-from application.modules.text_feature_models.load_text_models import (
+from psycop_feature_generation.text_models.load_text_models import (
     _load_bow_model,
     _load_tfidf_model,
+    _load_lda_model,
 )
-
 from timeseriesflattener.feature_spec_objects import (
     BaseModel,
     PredictorGroupSpec,
@@ -18,8 +17,9 @@ from timeseriesflattener.feature_spec_objects import (
     StaticSpec,
     _AnySpec,
 )
-
-from timeseriesflattener.text_embedding_functions import sklearn_embedding
+from timeseriesflattener.text_embedding_functions import (
+    sklearn_embedding,
+)  ## get back to this
 
 log = logging.getLogger(__name__)
 
@@ -357,7 +357,9 @@ class TextFeatureSpecifier:
         """Get tfidf specs"""
         log.info("–––––––– Generating tfidf specs ––––––––")
 
-        bow_model = _load_bow_model()
+        bow_model = _load_bow_model(
+            filename="bow_ngram_range_"
+        )  ## write filename of model we'll use
 
         bow = TextPredictorSpec(
             values_loader=(
@@ -369,10 +371,10 @@ class TextFeatureSpecifier:
             resolve_multiple_fn=resolve_multiple,
             feature_name="text-bow",
             input_col_name_override="text",
-            embedding_fn=sklearn_embedding,
+            embedding_fn=sklearn_embedding,  ### NB ###
             embedding_fn_kwargs={
                 "model": bow_model
-            },  # bow model trained on psycop cohort
+            },  # bow model trained on psycop train+val id's
         ).create_combinations()
 
         return bow
@@ -381,7 +383,9 @@ class TextFeatureSpecifier:
         """Get tfidf specs"""
         log.info("–––––––– Generating tfidf specs ––––––––")
 
-        tfidf_model = _load_tfidf_model()
+        tfidf_model = _load_tfidf_model(
+            filename="tfidf_ngram_range_"
+        )  ## write filename of model we'll use
 
         tfidf = TextPredictorSpec(
             values_loader=(
@@ -392,13 +396,38 @@ class TextFeatureSpecifier:
             fallback=[np.nan],
             resolve_multiple_fn=resolve_multiple,
             feature_name="text-tfidf",
-            embedding_fn=sklearn_embedding,
+            embedding_fn=sklearn_embedding,  ### NB ###
             embedding_fn_kwargs={
                 "model": tfidf_model
-            },  # bow model trained on psycop cohort
+            },  # tfidf model trained on psycop train+val id's
         ).create_combinations()
 
         return tfidf
+
+    def _get_lda_specs(self, resolve_multiple, interval_days):
+        """Get lda specs"""
+        log.info("–––––––– Generating lda specs ––––––––")
+
+        lda_model = _load_lda_model(
+            filename="lda_ngram_range_"
+        )  ## write filename of model we'll use
+
+        lda = TextPredictorSpec(
+            values_loader=(
+                "all_notes",
+                "aktuelt_psykisk",
+            ),
+            lookbehind_days=interval_days,
+            fallback=[np.nan],
+            resolve_multiple_fn=resolve_multiple,
+            feature_name="text-lda",
+            embedding_fn=sklearn_embedding,  ### NB ###
+            embedding_fn_kwargs={
+                "model": lda_model
+            },  # lda model trained on psycop train+val id's
+        ).create_combinations()
+
+        return lda
 
     def _get_text_predictor_specs(self) -> list[PredictorSpec]:
         """Generate text predictor spec list."""
@@ -410,12 +439,12 @@ class TextFeatureSpecifier:
 
             return [
                 TextPredictorSpec(
-                    values_loader="aktuelt_psykisk",
+                    values_loader=("aktuelt_psykisk"),
                     lookbehind_days=100,
                     resolve_multiple_fn="concatenate",
                     fallback=[np.nan],
                     features_name="text_tfidf",
-                    embedding_fn=sklearn_embedding,
+                    embedding_fn=sklearn_embedding,  ### NB ###
                     embedding_fn_kwargs={"model": tfidf_model},
                 )
             ]
