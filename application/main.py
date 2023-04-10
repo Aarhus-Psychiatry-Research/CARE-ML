@@ -65,7 +65,6 @@ if __name__ == "__main__":
     project_info = get_project_info(
         project_name="coercion",
     )
-    project_info
     init_root_logger(project_info=project_info)
 
     log.info(f"Stdout level is {logging.getLevelName(log.level)}")
@@ -87,7 +86,6 @@ if __name__ == "__main__":
         config={
             "feature_set_path": project_info.feature_set_path,
         },
-        mode="dryrun",
     )
 
     main()
