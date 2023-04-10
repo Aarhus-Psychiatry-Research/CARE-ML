@@ -16,4 +16,4 @@ data:
     age: pred_age_in_years
     exclusion_timestamp: 
     custom_columns:
-      # - eval_hba1c_within_9999_days_count_fallback_nan
+      - outcome_coercion_type_within_2_days
