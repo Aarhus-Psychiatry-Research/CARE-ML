@@ -2,7 +2,7 @@
 data:
   # General config
   n_training_samples: null
-  dir: E:\shared_resources\coercion\feature_sets\psycop_coercion_adminsakold_features_2023_04_04_11_55
+  dir: E:\shared_resources\coercion\feature_sets\psycop_coercion_adminsignbe_features_2023_04_10_12_36
   suffix: parquet
 
   # Feature specs
@@ -15,5 +15,6 @@ data:
     id: dw_ek_borger
     age: pred_age_in_years
     exclusion_timestamp: 
-    custom_columns:
-      - outcome_coercion_type_within_2_days
+    custom_columns: 
+    - outcome_coercion_type_within_2_days 
+    - adm_id
