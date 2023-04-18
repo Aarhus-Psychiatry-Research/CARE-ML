@@ -247,109 +247,6 @@ class FeatureSpecifier:
 
         return structured_sfi
 
-    def _get_temporal_predictor_specs(self) -> list[PredictorSpec]:
-        """Generate predictor spec list."""
-        log.info("–––––––– Generating temporal predictor specs ––––––––")
-
-        if self.min_set_for_debug:
-            return [
-                PredictorSpec(
-                    values_loader="f0_disorders",
-                    lookbehind_days=100,
-                    resolve_multiple_fn="bool",
-                    fallback=np.nan,
-                    allowed_nan_value_prop=0,
-                    prefix=self.project_info.prefix.predictor,
-                )
-            ]
-
-        resolve_multiple = ["bool", "count"]
-        interval_days = [10, 30, 180, 365, 730]
-        allowed_nan_value_prop = [0]
-
-        latest_weight_height_bmi = self._get_weight_and_height_specs(
-            resolve_multiple=["latest"],
-            interval_days=interval_days,
-            allowed_nan_value_prop=allowed_nan_value_prop,
-        )
-
-        visits = self._get_visits_specs(
-            resolve_multiple=resolve_multiple + ["sum"],
-            interval_days=interval_days,
-            allowed_nan_value_prop=allowed_nan_value_prop,
-        )
-
-        diagnoses = self._get_diagnoses_specs(
-            resolve_multiple=["bool"],
-            interval_days=interval_days,
-            allowed_nan_value_prop=allowed_nan_value_prop,
-        )
-
-        medications = self._get_medication_specs(
-            resolve_multiple=resolve_multiple,
-            interval_days=[1, 3, 7] + interval_days,
-            allowed_nan_value_prop=allowed_nan_value_prop,
-        )
-
-        schema_1_schema_2_coercion = self._get_schema_1_and_2_specs(
-            resolve_multiple=resolve_multiple + ["sum"],
-            interval_days=[7] + interval_days,
-            allowed_nan_value_prop=allowed_nan_value_prop,
-        )
-
-        schema_1_schema_2_coercion_current_status = (
-            self._get_schema_1_and_2_current_status_specs(
-                resolve_multiple=["bool"],
-                interval_days=[1, 2, 3],
-                allowed_nan_value_prop=allowed_nan_value_prop,
-            )
-        )
-
-        schema_3_coercion = self._get_schema_3_specs(
-            resolve_multiple=resolve_multiple + ["sum"],
-            interval_days=[730],
-            allowed_nan_value_prop=allowed_nan_value_prop,
-        )
-
-        forced_medication_coercion = self._get_forced_medication_specs(
-            resolve_multiple=resolve_multiple,
-            interval_days=[730],
-            allowed_nan_value_prop=allowed_nan_value_prop,
-        )
-
-        structured_sfi = self._get_structured_sfi_specs(
-            resolve_multiple=["mean", "max", "min", "change_per_day", "variance"],
-            interval_days=[1, 3, 7] + interval_days,
-            allowed_nan_value_prop=allowed_nan_value_prop,
-        )
-
-    #         return (
-    #             latest_weight_height_bmi
-    #             + visits
-    #             + medications
-    #             + diagnoses
-    #             + schema_1_schema_2_coercion
-    #             + schema_1_schema_2_coercion_current_status
-    #             + schema_3_coercion
-    #             + forced_medication_coercion
-    #             + structured_sfi
-    #         )
-
-    #     def get_feature_specs(self) -> list[_AnySpec]:
-    #         """Get a spec set."""
-
-    #         if self.min_set_for_debug:
-    #             return self._get_temporal_predictor_specs()  # type: ignore
-
-    #         return self._get_temporal_predictor_specs() + self._get_static_predictor_specs()  # type: ignore
-
-    # class TextFeatureSpecifier:
-    #     """Specify features based on prediction time."""
-
-    #     def __init__(self, project_info: ProjectInfo, min_set_for_debug: bool = False):
-    #         self.min_set_for_debug = min_set_for_debug
-    #         self.project_info = project_info
-
     def _get_bow_all_sfis_specs(self, resolve_multiple, interval_days):
         """Get bow all sfis specs"""
         log.info("–––––––– Generating bow all sfis specs ––––––––")
@@ -436,6 +333,94 @@ class FeatureSpecifier:
 
         return tfidf
 
+    def _get_temporal_predictor_specs(self) -> list[PredictorSpec]:
+        """Generate predictor spec list."""
+        log.info("–––––––– Generating temporal predictor specs ––––––––")
+
+        if self.min_set_for_debug:
+            return [
+                PredictorSpec(
+                    values_loader="f0_disorders",
+                    lookbehind_days=100,
+                    resolve_multiple_fn="bool",
+                    fallback=np.nan,
+                    allowed_nan_value_prop=0,
+                    prefix=self.project_info.prefix.predictor,
+                )
+            ]
+
+        resolve_multiple = ["bool", "count"]
+        interval_days = [10, 30, 180, 365, 730]
+        allowed_nan_value_prop = [0]
+
+        latest_weight_height_bmi = self._get_weight_and_height_specs(
+            resolve_multiple=["latest"],
+            interval_days=interval_days,
+            allowed_nan_value_prop=allowed_nan_value_prop,
+        )
+
+        visits = self._get_visits_specs(
+            resolve_multiple=resolve_multiple + ["sum"],
+            interval_days=interval_days,
+            allowed_nan_value_prop=allowed_nan_value_prop,
+        )
+
+        diagnoses = self._get_diagnoses_specs(
+            resolve_multiple=["bool"],
+            interval_days=interval_days,
+            allowed_nan_value_prop=allowed_nan_value_prop,
+        )
+
+        medications = self._get_medication_specs(
+            resolve_multiple=resolve_multiple,
+            interval_days=[1, 3, 7] + interval_days,
+            allowed_nan_value_prop=allowed_nan_value_prop,
+        )
+
+        schema_1_schema_2_coercion = self._get_schema_1_and_2_specs(
+            resolve_multiple=resolve_multiple + ["sum"],
+            interval_days=[7] + interval_days,
+            allowed_nan_value_prop=allowed_nan_value_prop,
+        )
+
+        schema_1_schema_2_coercion_current_status = (
+            self._get_schema_1_and_2_current_status_specs(
+                resolve_multiple=["bool"],
+                interval_days=[1, 2, 3],
+                allowed_nan_value_prop=allowed_nan_value_prop,
+            )
+        )
+
+        schema_3_coercion = self._get_schema_3_specs(
+            resolve_multiple=resolve_multiple + ["sum"],
+            interval_days=[730],
+            allowed_nan_value_prop=allowed_nan_value_prop,
+        )
+
+        forced_medication_coercion = self._get_forced_medication_specs(
+            resolve_multiple=resolve_multiple,
+            interval_days=[730],
+            allowed_nan_value_prop=allowed_nan_value_prop,
+        )
+
+        structured_sfi = self._get_structured_sfi_specs(
+            resolve_multiple=["mean", "max", "min", "change_per_day", "variance"],
+            interval_days=[1, 3, 7] + interval_days,
+            allowed_nan_value_prop=allowed_nan_value_prop,
+        )
+
+        return (
+            latest_weight_height_bmi
+            + visits
+            + medications
+            + diagnoses
+            + schema_1_schema_2_coercion
+            + schema_1_schema_2_coercion_current_status
+            + schema_3_coercion
+            + forced_medication_coercion
+            + structured_sfi
+        )
+
     def _get_text_predictor_specs(self) -> list[TextPredictorSpec]:
         """Generate text predictor spec list."""
         log.info("–––––––– Generating text predictor specs ––––––––")
@@ -455,7 +440,7 @@ class FeatureSpecifier:
                     embedding_fn=sklearn_embedding,
                     embedding_fn_kwargs={"model": bow_model},
                     loader_kwargs={"n_rows": 100},
-                )
+                )  # type: ignore
             ]
 
         resolve_multiple = "concatenate"
@@ -490,4 +475,8 @@ class FeatureSpecifier:
         if self.min_set_for_debug:
             return self._get_text_predictor_specs()
 
-        return self._get_text_predictor_specs()
+        return (
+            self._get_static_predictor_specs()
+            + self._get_temporal_predictor_specs()
+            + self._get_text_predictor_specs()
+        )

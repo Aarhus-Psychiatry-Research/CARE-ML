@@ -6,12 +6,6 @@ from pathlib import Path
 import wandb
 
 from modules.specify_features import FeatureSpecifier
-
-# had to add application - something's up with the paths
-# from modules.specify_features import (
-#     FeatureSpecifier,
-#     # TextFeatureSpecifier,
-# )
 from modules.loaders.load_coercion_df_with_prediction_times_and_outcome import (
     LoadCoercion,
 )
@@ -43,13 +37,6 @@ def main():
         project_info=project_info,
         min_set_for_debug=True,  # Remember to set to False when generating full dataset
     ).get_feature_specs()
-
-    # text_feature_specs = TextFeatureSpecifier(
-    #     project_info=project_info,
-    #     min_set_for_debug=True,  # Remember to set to False when generating full dataset
-    # ).get_feature_specs()
-
-    # concat feature specs and text_feature_specs somehow
 
     flattened_df = create_flattened_dataset(
         feature_specs=feature_specs,
