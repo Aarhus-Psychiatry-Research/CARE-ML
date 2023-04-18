@@ -5,8 +5,13 @@ import sys
 from pathlib import Path
 import wandb
 
+from modules.specify_features import FeatureSpecifier
+
 # had to add application - something's up with the paths
-from modules.specify_features import FeatureSpecifier, TextFeatureSpecifier
+# from modules.specify_features import (
+#     FeatureSpecifier,
+#     # TextFeatureSpecifier,
+# )
 from modules.loaders.load_coercion_df_with_prediction_times_and_outcome import (
     LoadCoercion,
 )
@@ -34,20 +39,20 @@ log = logging.getLogger()
 def main():
     """Main function for loading, generating and evaluating a flattened
     dataset."""
-    # feature_specs = FeatureSpecifier(
-    #     project_info=project_info,
-    #     min_set_for_debug=False,  # Remember to set to False when generating full dataset
-    # ).get_feature_specs()
-
-    text_feature_specs = TextFeatureSpecifier(
+    feature_specs = FeatureSpecifier(
         project_info=project_info,
         min_set_for_debug=True,  # Remember to set to False when generating full dataset
     ).get_feature_specs()
 
+    # text_feature_specs = TextFeatureSpecifier(
+    #     project_info=project_info,
+    #     min_set_for_debug=True,  # Remember to set to False when generating full dataset
+    # ).get_feature_specs()
+
     # concat feature specs and text_feature_specs somehow
 
     flattened_df = create_flattened_dataset(
-        feature_specs=text_feature_specs,
+        feature_specs=feature_specs,
         prediction_times_df=LoadCoercion.coercion_df(timestamps_only=False),
         drop_pred_times_with_insufficient_look_distance=False,
         project_info=project_info,
@@ -60,7 +65,7 @@ def main():
 
     save_flattened_dataset_description_to_disk(
         project_info=project_info,
-        feature_specs=text_feature_specs,
+        feature_specs=feature_specs,
     )
 
 
@@ -93,6 +98,7 @@ if __name__ == "__main__":
         config={
             "feature_set_path": project_info.feature_set_path,
         },
+        mode="offline",
     )
 
     main()

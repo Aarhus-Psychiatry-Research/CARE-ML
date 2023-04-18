@@ -15,7 +15,8 @@ from timeseriesflattener.feature_spec_objects import (
 )
 from timeseriesflattener.text_embedding_functions import (
     sklearn_embedding,
-)  
+)
+from psycop_feature_generation.loaders.raw.load_text import load_aktuel_psykisk
 
 log = logging.getLogger(__name__)
 
@@ -38,11 +39,11 @@ class FeatureSpecifier:
         """Get static predictor specs."""
         return [
             StaticSpec(
-                values_loader="sex_female", # type: ignore
+                values_loader="sex_female",  # type: ignore
                 input_col_name_override="sex_female",
                 prefix=self.project_info.prefix.predictor,
                 feature_name="sex_female",
-            ), 
+            ),
         ]
 
     def _get_weight_and_height_specs(
@@ -55,7 +56,7 @@ class FeatureSpecifier:
             values_loader=["weight_in_kg", "height_in_cm", "bmi"],
             lookbehind_days=interval_days,
             resolve_multiple_fn=resolve_multiple,
-            fallback=[np.nan], # type: ignore
+            fallback=[np.nan],  # type: ignore
             allowed_nan_value_prop=allowed_nan_value_prop,
             prefix=self.project_info.prefix.predictor,
         ).create_combinations()
@@ -73,10 +74,10 @@ class FeatureSpecifier:
                 "physical_visits",
                 "physical_visits_to_psychiatry",
                 "physical_visits_to_somatic",
-            ), # type: ignore
+            ),  # type: ignore
             lookbehind_days=interval_days,
             resolve_multiple_fn=resolve_multiple,
-            fallback=[0], # type: ignore
+            fallback=[0],  # type: ignore
             allowed_nan_value_prop=allowed_nan_value_prop,
         ).create_combinations()
 
@@ -99,10 +100,10 @@ class FeatureSpecifier:
                 "f7_disorders",
                 "f8_disorders",
                 "f9_disorders",
-            ), # type: ignore
+            ),  # type: ignore
             resolve_multiple_fn=resolve_multiple,
             lookbehind_days=interval_days,
-            fallback=[0], # type: ignore
+            fallback=[0],  # type: ignore
             allowed_nan_value_prop=allowed_nan_value_prop,
         ).create_combinations()
 
@@ -123,10 +124,10 @@ class FeatureSpecifier:
                 "lithium",
                 "alcohol_abstinence",
                 "opioid_dependency",
-            ), # type: ignore
+            ),  # type: ignore
             lookbehind_days=interval_days,
             resolve_multiple_fn=resolve_multiple,
-            fallback=[0], # type: ignore
+            fallback=[0],  # type: ignore
             allowed_nan_value_prop=allowed_nan_value_prop,
         ).create_combinations()
 
@@ -149,10 +150,10 @@ class FeatureSpecifier:
                 "medicinering",
                 "ect",
                 "af_legemlig_lidelse",
-            ), # type: ignore
+            ),  # type: ignore
             resolve_multiple_fn=resolve_multiple,
             lookbehind_days=interval_days,
-            fallback=[0], # type: ignore
+            fallback=[0],  # type: ignore
             allowed_nan_value_prop=allowed_nan_value_prop,
         ).create_combinations()
 
@@ -177,10 +178,10 @@ class FeatureSpecifier:
                 "medicinering",
                 "ect",
                 "af_legemlig_lidelse",
-            ), # type: ignore
+            ),  # type: ignore
             resolve_multiple_fn=resolve_multiple,
             lookbehind_days=interval_days,
-            fallback=[0], # type: ignore
+            fallback=[0],  # type: ignore
             allowed_nan_value_prop=allowed_nan_value_prop,
             loader_kwargs=[{"unpack_to_intervals": True}],
         ).create_combinations()
@@ -200,10 +201,10 @@ class FeatureSpecifier:
                 "baelte",
                 "remme",
                 "farlighed",
-            ), # type: ignore
+            ),  # type: ignore
             resolve_multiple_fn=resolve_multiple,
             lookbehind_days=interval_days,
-            fallback=[0], # type: ignore
+            fallback=[0],  # type: ignore
             allowed_nan_value_prop=allowed_nan_value_prop,
         ).create_combinations()
 
@@ -216,10 +217,10 @@ class FeatureSpecifier:
         log.info("–––––––– Generating forced medication coercion specs ––––––––")
 
         beroligende_medicin = PredictorGroupSpec(
-            values_loader=("beroligende_medicin",), # type: ignore
+            values_loader="beroligende_medicin",
             lookbehind_days=interval_days,
             resolve_multiple_fn=resolve_multiple,
-            fallback=[0], # type: ignore
+            fallback=[0],  # type: ignore
             allowed_nan_value_prop=allowed_nan_value_prop,
         ).create_combinations()
 
@@ -237,10 +238,10 @@ class FeatureSpecifier:
                 "selvmordsrisiko",
                 "hamilton_d17",
                 "mas_m",
-            ), # type: ignore
+            ),  # type: ignore
             resolve_multiple_fn=resolve_multiple,
             lookbehind_days=interval_days,
-            fallback=[np.nan], # type: ignore
+            fallback=[np.nan],  # type: ignore
             allowed_nan_value_prop=allowed_nan_value_prop,
         ).create_combinations()
 
@@ -322,53 +323,52 @@ class FeatureSpecifier:
             allowed_nan_value_prop=allowed_nan_value_prop,
         )
 
-        return (
-            latest_weight_height_bmi
-            + visits
-            + medications
-            + diagnoses
-            + schema_1_schema_2_coercion
-            + schema_1_schema_2_coercion_current_status
-            + schema_3_coercion
-            + forced_medication_coercion
-            + structured_sfi
-        )
+    #         return (
+    #             latest_weight_height_bmi
+    #             + visits
+    #             + medications
+    #             + diagnoses
+    #             + schema_1_schema_2_coercion
+    #             + schema_1_schema_2_coercion_current_status
+    #             + schema_3_coercion
+    #             + forced_medication_coercion
+    #             + structured_sfi
+    #         )
 
-    def get_feature_specs(self) -> list[_AnySpec]:
-        """Get a spec set."""
+    #     def get_feature_specs(self) -> list[_AnySpec]:
+    #         """Get a spec set."""
 
-        if self.min_set_for_debug:
-            return self._get_temporal_predictor_specs() # type: ignore
+    #         if self.min_set_for_debug:
+    #             return self._get_temporal_predictor_specs()  # type: ignore
 
-        return self._get_temporal_predictor_specs() + self._get_static_predictor_specs() # type: ignore
+    #         return self._get_temporal_predictor_specs() + self._get_static_predictor_specs()  # type: ignore
 
+    # class TextFeatureSpecifier:
+    #     """Specify features based on prediction time."""
 
-class TextFeatureSpecifier:
-    """Specify features based on prediction time."""
-
-    def __init__(self, project_info: ProjectInfo, min_set_for_debug: bool = False):
-        self.min_set_for_debug = min_set_for_debug
-        self.project_info = project_info
+    #     def __init__(self, project_info: ProjectInfo, min_set_for_debug: bool = False):
+    #         self.min_set_for_debug = min_set_for_debug
+    #         self.project_info = project_info
 
     def _get_bow_all_sfis_specs(self, resolve_multiple, interval_days):
         """Get bow all sfis specs"""
         log.info("–––––––– Generating bow all sfis specs ––––––––")
 
         bow_model = load_text_model(
-            filename="bow_psycop_train_all_sfis_all_years_lowercase_stopwords_and_symbols_removed_sfi_type_All_sfis_ngram_range_12_max_df_095_min_df_2_max_features_500.pkl"
+            filename="bow_psycop_train_all_sfis_all_years_lowercase_stopwords_and_symbols_removed_sfi_type_All_sfis_ngram_range_12_max_df_095_min_df_2_max_features_100.pkl"
         )
 
         bow = TextPredictorSpec(
-            values_loader=("all_notes",), # type: ignore
+            values_loader=("all_notes",),  # type: ignore
             lookbehind_days=interval_days,
-            fallback=[np.nan], # type: ignore
+            fallback=[np.nan],  # type: ignore
             resolve_multiple_fn=resolve_multiple,
             feature_name="text-bow",
             interval_days=interval_days,
             input_col_name_override="text",
-            embedding_fn=sklearn_embedding,  
+            embedding_fn=sklearn_embedding,
             embedding_fn_kwargs={"model": bow_model},
-        ).create_combinations() 
+        ).create_combinations()
 
         return bow
 
@@ -381,14 +381,14 @@ class TextFeatureSpecifier:
         )
 
         bow = TextPredictorSpec(
-            values_loader=("Aktuelt psykisk",), # type: ignore
+            values_loader="aktuelt_psykisk",
             lookbehind_days=interval_days,
-            fallback=[np.nan], # type: ignore
+            fallback=[np.nan],  # type: ignore
             resolve_multiple_fn=resolve_multiple,
             feature_name="text-bow",
             interval_days=interval_days,
             input_col_name_override="text",
-            embedding_fn=sklearn_embedding,  
+            embedding_fn=sklearn_embedding,
             embedding_fn_kwargs={"model": bow_model},
         ).create_combinations()
 
@@ -399,11 +399,11 @@ class TextFeatureSpecifier:
         log.info("–––––––– Generating tfidf all sfis specs ––––––––")
 
         tfidf_model = load_text_model(
-            filename="tfidf_psycop_train_all_sfis_all_years_lowercase_stopwords_and_symbols_removed_sfi_type_All_sfis_ngram_range_12_max_df_095_min_df_2_max_features_500"
+            filename="tfidf_psycop_train_all_sfis_all_years_lowercase_stopwords_and_symbols_removed_sfi_type_All_sfis_ngram_range_12_max_df_095_min_df_2_max_features_100"
         )
 
         tfidf = TextPredictorSpec(
-            values_loader=("all_notes",),
+            values_loader="all_notes",
             lookbehind_days=interval_days,
             fallback=[np.nan],
             resolve_multiple_fn=resolve_multiple,
@@ -420,11 +420,11 @@ class TextFeatureSpecifier:
         log.info("–––––––– Generating tfidf current psych sfi specs ––––––––")
 
         tfidf_model = load_text_model(
-            filename="tfidf_psycop_train_all_sfis_all_years_lowercase_stopwords_and_symbols_removed_sfi_type_Aktueltpsykisk_ngram_range_12_max_df_095_min_df_2_max_features_500"
+            filename="tfidf_psycop_train_all_sfis_all_years_lowercase_stopwords_and_symbols_removed_sfi_type_Aktueltpsykisk_ngram_range_12_max_df_095_min_df_2_max_features_100"
         )
 
         tfidf = TextPredictorSpec(
-            values_loader=("aktuelt_psykisk",),
+            values_loader=load_aktuel_psykisk(),
             lookbehind_days=interval_days,
             fallback=[np.nan],
             resolve_multiple_fn=resolve_multiple,
@@ -441,21 +441,20 @@ class TextFeatureSpecifier:
         log.info("–––––––– Generating text predictor specs ––––––––")
 
         if self.min_set_for_debug:
-
             bow_model = load_text_model(
                 filename="bow_psycop_train_val_all_sfis_all_years_lowercase_stopwords_and_symbols_removed_sfi_type_Aktueltpsykisk_ngram_range_12_max_df_095_min_df_2_max_features_100.pkl"
             )
 
             return [
                 TextPredictorSpec(
-                    values_loader=("aktuelt_psykisk",),
-                    lookbehind_days=100,
+                    values_loader="aktuelt_psykisk",
+                    lookbehind_days=7,
                     resolve_multiple_fn="concatenate",
-                    fallback=[np.nan],
+                    fallback=np.nan,
                     feature_name="text_tfidf",
-                    interval_days=[7],
                     embedding_fn=sklearn_embedding,
                     embedding_fn_kwargs={"model": bow_model},
+                    loader_kwargs={"n_rows": 100},
                 )
             ]
 
