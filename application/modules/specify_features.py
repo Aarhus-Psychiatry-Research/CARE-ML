@@ -1,5 +1,6 @@
 """Feature specification module."""
 import logging
+from typing import Union
 
 import numpy as np
 
@@ -195,13 +196,13 @@ class FeatureSpecifier:
         log.info("–––––––– Generating schema 3 coercion specs ––––––––")
 
         coercion = PredictorGroupSpec(
-            values_loader=(
+            values_loader=[
                 "skema_3",
                 "fastholden",
                 "baelte",
                 "remme",
                 "farlighed",
-            ),  # type: ignore
+            ],
             resolve_multiple_fn=resolve_multiple,
             lookbehind_days=interval_days,
             fallback=[0],  # type: ignore
@@ -217,7 +218,7 @@ class FeatureSpecifier:
         log.info("–––––––– Generating forced medication coercion specs ––––––––")
 
         beroligende_medicin = PredictorGroupSpec(
-            values_loader="beroligende_medicin",
+            values_loader=["beroligende_medicin"],
             lookbehind_days=interval_days,
             resolve_multiple_fn=resolve_multiple,
             fallback=[0],  # type: ignore
@@ -233,12 +234,12 @@ class FeatureSpecifier:
         log.info("–––––––– Generating structured sfi specs ––––––––")
 
         structured_sfi = PredictorGroupSpec(
-            values_loader=(
+            values_loader=[
                 "broeset_violence_checklist",
                 "selvmordsrisiko",
                 "hamilton_d17",
                 "mas_m",
-            ),  # type: ignore
+            ],
             resolve_multiple_fn=resolve_multiple,
             lookbehind_days=interval_days,
             fallback=[np.nan],  # type: ignore
@@ -252,11 +253,11 @@ class FeatureSpecifier:
         log.info("–––––––– Generating bow all sfis specs ––––––––")
 
         bow_model = load_text_model(
-            filename="bow_psycop_train_all_sfis_all_years_lowercase_stopwords_and_symbols_removed_sfi_type_All_sfis_ngram_range_12_max_df_095_min_df_2_max_features_100.pkl"
+            filename="bow_psycop_train_all_sfis_all_years_lowercase_stopwords_and_symbols_removed_sfi_type_All_sfis_ngram_range_12_max_df_10_min_df_1_max_features_100.pkl"
         )
 
         bow = TextPredictorSpec(
-            values_loader=("all_notes",),  # type: ignore
+            values_loader="all_notes",
             lookbehind_days=interval_days,
             fallback=[np.nan],  # type: ignore
             resolve_multiple_fn=resolve_multiple,
@@ -265,7 +266,7 @@ class FeatureSpecifier:
             input_col_name_override="text",
             embedding_fn=sklearn_embedding,
             embedding_fn_kwargs={"model": bow_model},
-        ).create_combinations()
+        )
 
         return bow
 
@@ -274,20 +275,20 @@ class FeatureSpecifier:
         log.info("–––––––– Generating bow current psych sfi specs ––––––––")
 
         bow_model = load_text_model(
-            filename="bow_psycop_train_val_all_sfis_all_years_lowercase_stopwords_and_symbols_removed_sfi_type_Aktueltpsykisk_ngram_range_12_max_df_095_min_df_2_max_features_100.pkl"
+            filename="bow_psycop_train_val_all_sfis_all_years_lowercase_stopwords_and_symbols_removed_sfi_type_Aktueltpsykisk_ngram_range_12_max_df_10_min_df_1_max_features_100.pkl"
         )
 
         bow = TextPredictorSpec(
             values_loader="aktuelt_psykisk",
             lookbehind_days=interval_days,
-            fallback=[np.nan],  # type: ignore
+            fallback=np.nan,
             resolve_multiple_fn=resolve_multiple,
             feature_name="text-bow",
             interval_days=interval_days,
             input_col_name_override="text",
             embedding_fn=sklearn_embedding,
             embedding_fn_kwargs={"model": bow_model},
-        ).create_combinations()
+        )
 
         return bow
 
@@ -296,19 +297,19 @@ class FeatureSpecifier:
         log.info("–––––––– Generating tfidf all sfis specs ––––––––")
 
         tfidf_model = load_text_model(
-            filename="tfidf_psycop_train_all_sfis_all_years_lowercase_stopwords_and_symbols_removed_sfi_type_All_sfis_ngram_range_12_max_df_095_min_df_2_max_features_100"
+            filename="tfidf_psycop_train_all_sfis_all_years_lowercase_stopwords_and_symbols_removed_sfi_type_All_sfis_ngram_range_12_max_df_10_min_df_1_max_features_100.pkl"
         )
 
         tfidf = TextPredictorSpec(
             values_loader="all_notes",
             lookbehind_days=interval_days,
-            fallback=[np.nan],
+            fallback=np.nan,
             resolve_multiple_fn=resolve_multiple,
             feature_name="text-tfidf",
             interval_days=interval_days,
             embedding_fn=sklearn_embedding,
             embedding_fn_kwargs={"model": tfidf_model},
-        ).create_combinations()
+        )
 
         return tfidf
 
@@ -317,19 +318,19 @@ class FeatureSpecifier:
         log.info("–––––––– Generating tfidf current psych sfi specs ––––––––")
 
         tfidf_model = load_text_model(
-            filename="tfidf_psycop_train_all_sfis_all_years_lowercase_stopwords_and_symbols_removed_sfi_type_Aktueltpsykisk_ngram_range_12_max_df_095_min_df_2_max_features_100"
+            filename="tfidf_psycop_train_all_sfis_all_years_lowercase_stopwords_and_symbols_removed_sfi_type_Aktueltpsykisk_ngram_range_12_max_df_10_min_df_1_max_features_100.pkl"
         )
 
         tfidf = TextPredictorSpec(
-            values_loader=load_aktuel_psykisk(),
+            values_loader=load_aktuel_psykisk,
             lookbehind_days=interval_days,
-            fallback=[np.nan],
+            fallback=np.nan,
             resolve_multiple_fn=resolve_multiple,
             feature_name="text-tfidf",
             interval_days=interval_days,
             embedding_fn=sklearn_embedding,
             embedding_fn_kwargs={"model": tfidf_model},
-        ).create_combinations()
+        )
 
         return tfidf
 
@@ -444,36 +445,76 @@ class FeatureSpecifier:
             ]
 
         resolve_multiple = "concatenate"
-        interval_days = [7, 30, 180]
 
-        bow_all_sfis = self._get_bow_all_sfis_specs(
-            resolve_multiple=resolve_multiple, interval_days=interval_days
+        bow_all_sfis_7 = self._get_bow_all_sfis_specs(
+            resolve_multiple=resolve_multiple, interval_days=7
         )
 
-        bow_current_psych_sfis = self._get_bow_current_psych_sfi_specs(
-            resolve_multiple=resolve_multiple, interval_days=interval_days
+        bow_current_psych_sfis_7 = self._get_bow_current_psych_sfi_specs(
+            resolve_multiple=resolve_multiple, interval_days=7
         )
 
-        tfidf_all_sfis = self._get_tfidf_all_sfis_specs(
-            resolve_multiple=resolve_multiple, interval_days=interval_days
+        tfidf_all_sfis_7 = self._get_tfidf_all_sfis_specs(
+            resolve_multiple=resolve_multiple, interval_days=7
         )
 
-        tfidf_current_psych_sfis = self._get_tfidf_current_psych_sfi_specs(
-            resolve_multiple=resolve_multiple, interval_days=interval_days
+        tfidf_current_psych_sfis_7 = self._get_tfidf_current_psych_sfi_specs(
+            resolve_multiple=resolve_multiple, interval_days=7
+        )
+        bow_all_sfis_30 = self._get_bow_all_sfis_specs(
+            resolve_multiple=resolve_multiple, interval_days=30
+        )
+
+        bow_current_psych_sfis_30 = self._get_bow_current_psych_sfi_specs(
+            resolve_multiple=resolve_multiple, interval_days=30
+        )
+
+        tfidf_all_sfis_30 = self._get_tfidf_all_sfis_specs(
+            resolve_multiple=resolve_multiple, interval_days=30
+        )
+
+        tfidf_current_psych_sfis_30 = self._get_tfidf_current_psych_sfi_specs(
+            resolve_multiple=resolve_multiple, interval_days=30
+        )
+
+        bow_all_sfis_180 = self._get_bow_all_sfis_specs(
+            resolve_multiple=resolve_multiple, interval_days=180
+        )
+
+        bow_current_psych_sfis_180 = self._get_bow_current_psych_sfi_specs(
+            resolve_multiple=resolve_multiple, interval_days=180
+        )
+
+        tfidf_all_sfis_180 = self._get_tfidf_all_sfis_specs(
+            resolve_multiple=resolve_multiple, interval_days=180
+        )
+
+        tfidf_current_psych_sfis_180 = self._get_tfidf_current_psych_sfi_specs(
+            resolve_multiple=resolve_multiple, interval_days=180
         )
 
         return (
-            bow_all_sfis
-            + bow_current_psych_sfis
-            + tfidf_all_sfis
-            + tfidf_current_psych_sfis
+            bow_all_sfis_7
+            + bow_current_psych_sfis_7
+            + tfidf_all_sfis_7
+            + tfidf_current_psych_sfis_7
+            + bow_all_sfis_30
+            + bow_current_psych_sfis_30
+            + tfidf_all_sfis_30
+            + tfidf_current_psych_sfis_30
+            + bow_all_sfis_180
+            + bow_current_psych_sfis_180
+            + tfidf_all_sfis_180
+            + tfidf_current_psych_sfis_180
         )
 
-    def get_feature_specs(self) -> list[_AnySpec]:
+    def get_feature_specs(
+        self,
+    ) -> list[Union[TextPredictorSpec, StaticSpec, PredictorSpec]]:
         """Get a spec set."""
 
         if self.min_set_for_debug:
-            return self._get_text_predictor_specs()
+            return self._get_text_predictor_specs()  # type: ignore
 
         return (
             self._get_static_predictor_specs()
