@@ -10,6 +10,7 @@ if __name__ == "__main__":
         max_features=100,
         max_df=1.0,
         min_df=1,
+        ngram_range=(1, 2),
     )
 
     text_model_pipeline(
@@ -19,6 +20,7 @@ if __name__ == "__main__":
         max_features=100,
         max_df=1.0,
         min_df=1,
+        ngram_range=(1, 2),
     )
 
     text_model_pipeline(
@@ -27,6 +29,7 @@ if __name__ == "__main__":
         max_features=100,
         max_df=1.0,
         min_df=1,
+        ngram_range=(1, 2),
     )
 
     text_model_pipeline(
@@ -36,4 +39,5 @@ if __name__ == "__main__":
         max_features=100,
         max_df=1.0,
         min_df=1,
+        ngram_range=(1, 2),
     )
