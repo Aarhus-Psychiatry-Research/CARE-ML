@@ -97,6 +97,7 @@ class FeatureSpecifier:
                 "f2_disorders",
                 "f3_disorders",
                 "f4_disorders",
+                "f5_disorders",
                 "f6_disorders",
                 "f7_disorders",
                 "f8_disorders",
@@ -387,7 +388,7 @@ class FeatureSpecifier:
         schema_1_schema_2_coercion_current_status = (
             self._get_schema_1_and_2_current_status_specs(
                 resolve_multiple=["bool"],
-                interval_days=[1, 2, 3],
+                interval_days=[1, 3],
                 allowed_nan_value_prop=allowed_nan_value_prop,
             )
         )
