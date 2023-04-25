@@ -21,5 +21,3 @@ hydra:
       ++model.args.penalty_solver: choice("elasticnet_saga")
       ++model.args.C: interval(1e-5, 1.0)
       ++model.args.l1_ratio: interval(1e-5, 1.0)
-      # preprocessing
-      ++preprocessing.post_split.scaling: choice("null", "z-score-normalization")
