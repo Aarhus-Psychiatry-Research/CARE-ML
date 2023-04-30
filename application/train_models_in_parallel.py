@@ -2,6 +2,7 @@
 wandb.
 """
 
+from pathlib import Path
 from psycop_model_training.application_modules.get_search_space import (
     SearchSpaceInferrer,
 )
@@ -33,6 +34,9 @@ def main(
         config_file_name=CONFIG_FILE_NAME,
         wandb_prefix=wandb_group,
         trainer_specs=trainer_specs,
+        train_single_model_file_path=Path(
+            "application/train_model_from_application_module.py"
+        ),
     )
 
 

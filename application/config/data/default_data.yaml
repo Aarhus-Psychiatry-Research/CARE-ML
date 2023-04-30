@@ -2,7 +2,7 @@
 data:
   # General config
   n_training_samples: null
-  dir: E:\shared_resources\coercion\feature_sets\psycop_coercion_adminsignbe_features_2023_04_10_12_36
+  dir: E:\shared_resources\coercion\feature_sets\psycop_coercion_adminsignbe_features_2023_04_30_11_50
   suffix: parquet
 
   # Feature specs
