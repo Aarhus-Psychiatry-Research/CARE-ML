@@ -262,9 +262,9 @@ class FeatureSpecifier:
             lookbehind_days=interval_days,
             fallback=[np.nan],  # type: ignore
             resolve_multiple_fn=resolve_multiple,
-            feature_name="text-bow",
+            feature_name="text-bow-all-sfis",
             interval_days=interval_days,
-            input_col_name_override="text",
+            # input_col_name_override="text",
             embedding_fn=sklearn_embedding,
             embedding_fn_kwargs={"model": bow_model},
         )
@@ -276,7 +276,7 @@ class FeatureSpecifier:
         log.info("–––––––– Generating bow current psych sfi specs ––––––––")
 
         bow_model = load_text_model(
-            filename="bow_psycop_train_val_all_sfis_all_years_lowercase_stopwords_and_symbols_removed_sfi_type_Aktueltpsykisk_ngram_range_12_max_df_10_min_df_1_max_features_100.pkl"
+            filename="bow_psycop_train_all_sfis_all_years_lowercase_stopwords_and_symbols_removed_sfi_type_Aktueltpsykisk_ngram_range_12_max_df_10_min_df_1_max_features_100.pkl"
         )
 
         bow = TextPredictorSpec(
@@ -284,11 +284,12 @@ class FeatureSpecifier:
             lookbehind_days=interval_days,
             fallback=np.nan,
             resolve_multiple_fn=resolve_multiple,
-            feature_name="text-bow",
+            feature_name="text-bow-current-psych",
             interval_days=interval_days,
-            input_col_name_override="text",
+            # input_col_name_override="text",
             embedding_fn=sklearn_embedding,
             embedding_fn_kwargs={"model": bow_model},
+            loader_kwargs={"n_rows": 100},
         )
 
         return bow
@@ -306,7 +307,7 @@ class FeatureSpecifier:
             lookbehind_days=interval_days,
             fallback=np.nan,
             resolve_multiple_fn=resolve_multiple,
-            feature_name="text-tfidf",
+            feature_name="text-tfidf-all-sfis",
             interval_days=interval_days,
             embedding_fn=sklearn_embedding,
             embedding_fn_kwargs={"model": tfidf_model},
@@ -327,7 +328,7 @@ class FeatureSpecifier:
             lookbehind_days=interval_days,
             fallback=np.nan,
             resolve_multiple_fn=resolve_multiple,
-            feature_name="text-tfidf",
+            feature_name="text-tfidf-current-psych",
             interval_days=interval_days,
             embedding_fn=sklearn_embedding,
             embedding_fn_kwargs={"model": tfidf_model},
@@ -429,8 +430,11 @@ class FeatureSpecifier:
 
         if self.min_set_for_debug:
             bow_model = load_text_model(
-                filename="bow_psycop_train_val_all_sfis_all_years_lowercase_stopwords_and_symbols_removed_sfi_type_Aktueltpsykisk_ngram_range_12_max_df_095_min_df_2_max_features_100.pkl"
+                filename="bow_psycop_train_all_sfis_all_years_lowercase_stopwords_and_symbols_removed_sfi_type_Aktueltpsykisk_ngram_range_12_max_df_095_min_df_2_max_features_100.pkl"
             )
+            # tfidf_model = load_text_model(
+            #     filename="tfidf_psycop_train_all_sfis_all_years_lowercase_stopwords_and_symbols_removed_sfi_type_Aktueltpsykisk_ngram_range_12_max_df_10_min_df_1_max_features_100.pkl"
+            # )
 
             return [
                 TextPredictorSpec(
@@ -438,12 +442,24 @@ class FeatureSpecifier:
                     lookbehind_days=7,
                     resolve_multiple_fn="concatenate",
                     fallback=np.nan,
-                    feature_name="text_tfidf",
+                    feature_name="text_bow",
                     embedding_fn=sklearn_embedding,
                     embedding_fn_kwargs={"model": bow_model},
                     loader_kwargs={"n_rows": 100},
                 )  # type: ignore
             ]
+
+            # resolve_multiple = "concatenate"
+
+            # bow_current_psych_sfis_7 = self._get_bow_current_psych_sfi_specs(
+            #     resolve_multiple=resolve_multiple, interval_days=7
+            # )
+
+            # tfidf_current_psych_sfis_7 = self._get_tfidf_current_psych_sfi_specs(
+            #     resolve_multiple=resolve_multiple, interval_days=7
+            # )
+
+            # return bow_current_psych_sfis_7 + tfidf_current_psych_sfis_7
 
         resolve_multiple = "concatenate"
 
