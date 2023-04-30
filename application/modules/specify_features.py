@@ -249,9 +249,7 @@ class FeatureSpecifier:
 
         return structured_sfi
 
-    def _get_mean_character_length_all_sfis_specs(
-        self, resolve_multiple, interval_days
-    ):
+    def _get_mean_len_all_sfis_specs(self, resolve_multiple, interval_days):
         """Get mean character length all sfis specs"""
         log.info("–––––––– Generating mean character length all sfis specs ––––––––")
 
@@ -259,18 +257,15 @@ class FeatureSpecifier:
             TextPredictorSpec(
                 values_loader="all_notes",
                 lookbehind_days=interval_days,
-                fallback=[np.nan],  # type: ignore
+                fallback=np.nan,
                 resolve_multiple_fn=resolve_multiple,
                 feature_name="text-mean-character-length-all-sfis",
                 interval_days=interval_days,
                 # input_col_name_override="text",
-                embedding_fn=sklearn_embedding,
             )
         ]
 
-    def _get_mean_character_length_current_psych_sfis_specs(
-        self, resolve_multiple, interval_days
-    ):
+    def _get_mean_len_current_psych_sfis_specs(self, resolve_multiple, interval_days):
         """Get mean character length current psych sfis specs"""
         log.info(
             "–––––––– Generating mean character length current psych sfis specs ––––––––"
@@ -280,12 +275,11 @@ class FeatureSpecifier:
             TextPredictorSpec(
                 values_loader="aktuelt_psykisk",
                 lookbehind_days=interval_days,
-                fallback=[np.nan],  # type: ignore
+                fallback=np.nan,
                 resolve_multiple_fn=resolve_multiple,
                 feature_name="text-mean-character-length-current-psych-sfis",
                 interval_days=interval_days,
                 # input_col_name_override="text",
-                embedding_fn=sklearn_embedding,
             )
         ]
 
@@ -297,12 +291,11 @@ class FeatureSpecifier:
             TextPredictorSpec(
                 values_loader="all_notes",
                 lookbehind_days=interval_days,
-                fallback=[np.nan],  # type: ignore
+                fallback=np.nan,
                 resolve_multiple_fn=resolve_multiple,
                 feature_name="text-type-token-ratio-all-sfis",
                 interval_days=interval_days,
                 # input_col_name_override="text",
-                embedding_fn=sklearn_embedding,
             )
         ]
 
@@ -318,12 +311,11 @@ class FeatureSpecifier:
             TextPredictorSpec(
                 values_loader="aktuelt_psykisk",
                 lookbehind_days=interval_days,
-                fallback=[np.nan],  # type: ignore
+                fallback=np.nan,
                 resolve_multiple_fn=resolve_multiple,
                 feature_name="text-mean-type-token-ratio-current-psych-sfis",
                 interval_days=interval_days,
                 # input_col_name_override="text",
-                embedding_fn=sklearn_embedding,
             )
         ]
 
@@ -339,7 +331,7 @@ class FeatureSpecifier:
             TextPredictorSpec(
                 values_loader="all_notes",
                 lookbehind_days=interval_days,
-                fallback=[np.nan],  # type: ignore
+                fallback=np.nan,
                 resolve_multiple_fn=resolve_multiple,
                 feature_name="text-bow-all-sfis",
                 interval_days=interval_days,
@@ -368,7 +360,6 @@ class FeatureSpecifier:
                 # input_col_name_override="text",
                 embedding_fn=sklearn_embedding,
                 embedding_fn_kwargs={"model": bow_model},
-                loader_kwargs={"n_rows": 100},
             )
         ]
 
@@ -507,46 +498,26 @@ class FeatureSpecifier:
         log.info("–––––––– Generating text predictor specs ––––––––")
 
         if self.min_set_for_debug:
-            bow_model = load_text_model(
-                filename="bow_psycop_train_all_sfis_all_years_lowercase_stopwords_and_symbols_removed_sfi_type_Aktueltpsykisk_ngram_range_12_max_df_095_min_df_2_max_features_100.pkl"
-            )
-            tfidf_model = load_text_model(
-                filename="tfidf_psycop_train_all_sfis_all_years_lowercase_stopwords_and_symbols_removed_sfi_type_Aktueltpsykisk_ngram_range_12_max_df_10_min_df_1_max_features_100.pkl"
+            mean_len_current_psych_sfis_7 = self._get_mean_len_current_psych_sfis_specs(
+                resolve_multiple="mean_len", interval_days=7
             )
 
-            TextPredictorSpec(
-                values_loader="aktuelt_psykisk",
-                lookbehind_days=7,
-                resolve_multiple_fn="concatenate",
-                fallback=np.nan,
-                feature_name="text_bow",
-                embedding_fn=sklearn_embedding,
-                embedding_fn_kwargs={"model": bow_model},
-                loader_kwargs={"n_rows": 100},
-            )  # type: ignore
-
-            bow_current_psych_sfis_7 = self._get_bow_current_psych_sfi_specs(
-                resolve_multiple="concatenate", interval_days=7
+            type_token_ratio_current_psych_sfis_7 = (
+                self._get_type_token_ratio_current_psych_sfis_specs(
+                    resolve_multiple="type_token_ratio", interval_days=7
+                )
             )
 
-            tfidf_current_psych_sfis_7 = self._get_tfidf_current_psych_sfi_specs(
-                resolve_multiple="concatenate", interval_days=7
-            )
-
-            return bow_current_psych_sfis_7 + tfidf_current_psych_sfis_7
+            return mean_len_current_psych_sfis_7 + type_token_ratio_current_psych_sfis_7
 
         resolve_multiple = "concatenate"
 
-        mean_character_length_all_sfis_7 = (
-            self._get_mean_character_length_all_sfis_specs(
-                resolve_multiple="mean_character_length", interval_days=7
-            )
+        mean_len_all_sfis_7 = self._get_mean_len_all_sfis_specs(
+            resolve_multiple="mean_len", interval_days=7
         )
 
-        mean_character_length_current_psych_sfis_7 = (
-            self._get_mean_character_length_current_psych_sfis_specs(
-                resolve_multiple="mean_character_length", interval_days=7
-            )
+        mean_len_current_psych_sfis_7 = self._get_mean_len_current_psych_sfis_specs(
+            resolve_multiple="mean_len", interval_days=7
         )
 
         type_token_ratio_all_sfis_7 = self._get_type_token_ratio_all_sfis_specs(
@@ -607,8 +578,8 @@ class FeatureSpecifier:
         )
 
         return (
-            mean_character_length_all_sfis_7
-            + mean_character_length_current_psych_sfis_7
+            mean_len_all_sfis_7
+            + mean_len_current_psych_sfis_7
             + type_token_ratio_all_sfis_7
             + type_token_ratio_current_psych_sfis_7
             + bow_all_sfis_7
