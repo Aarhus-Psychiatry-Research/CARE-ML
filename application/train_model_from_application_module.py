@@ -6,7 +6,6 @@ file, rather than an installed module.
 from pathlib import Path
 
 import hydra
-from artifacts.custom_artifacts import create_custom_plot_artifacts
 from omegaconf import DictConfig
 from psycop_model_training.application_modules.train_model.main import train_model
 from psycop_model_training.config_schemas.conf_utils import (
@@ -17,6 +16,7 @@ from psycop_model_training.training.train_and_predict import CONFIG_PATH
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 CONFIG_PATH = PROJECT_ROOT / "application" / "config"
+WANDB_LOG_PATH = PROJECT_ROOT / "wandb" / "debug-cli.onerm"
 
 
 @hydra.main(
@@ -26,10 +26,13 @@ CONFIG_PATH = PROJECT_ROOT / "application" / "config"
 )
 def main(cfg: DictConfig):
     """Main."""
+    if not Path.exists(WANDB_LOG_PATH):
+        WANDB_LOG_PATH.mkdir(parents=True, exist_ok=True)
+
     if not isinstance(cfg, FullConfigSchema):
         cfg = convert_omegaconf_to_pydantic_object(cfg)
 
-    return train_model(cfg=cfg, custom_artifact_fn=create_custom_plot_artifacts)
+    return train_model(cfg=cfg)
 
 
 if __name__ == "__main__":

@@ -2,6 +2,7 @@
 wandb.
 """
 
+from pathlib import Path
 from psycop_model_training.application_modules.get_search_space import (
     SearchSpaceInferrer,
 )
@@ -9,7 +10,7 @@ from psycop_model_training.application_modules.process_manager_setup import setu
 from psycop_model_training.application_modules.trainer_spawner import spawn_trainers
 from psycop_model_training.config_schemas.full_config import FullConfigSchema
 from psycop_model_training.data_loader.data_loader import DataLoader
-from psycopmlutils.wandb.wandb_try_except_decorator import wandb_alert_on_exception
+from psycop_ml_utils.wandb.wandb_try_except_decorator import wandb_alert_on_exception
 
 
 @wandb_alert_on_exception
@@ -20,7 +21,7 @@ def main(
     """Main."""
     # Load dataset without dropping any rows for inferring
     # which look distances to grid search over
-    train_df = DataLoader(cfg=cfg).load_dataset_from_dir(split_names="train")
+    train_df = DataLoader(data_cfg=cfg.data).load_dataset_from_dir(split_names="train")
 
     trainer_specs = SearchSpaceInferrer(
         cfg=cfg,
@@ -33,6 +34,9 @@ def main(
         config_file_name=CONFIG_FILE_NAME,
         wandb_prefix=wandb_group,
         trainer_specs=trainer_specs,
+        train_single_model_file_path=Path(
+            "application/train_model_from_application_module.py"
+        ),
     )
 
 
