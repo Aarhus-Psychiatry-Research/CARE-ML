@@ -15,7 +15,6 @@ class LoadCoercion:
     def coercion_df(
         timestamps_only: bool = True,
     ) -> pd.DataFrame:
-
         df = sql_load(
             query="SELECT [adm_id],[dw_ek_borger],[timestamp_admission],[timestamp_discharge],[outcome_timestamp],[pred_adm_day_count],[timestamp],[outcome_coercion_bool_within_2_days],[outcome_coercion_type_within_2_days],[outcome_mechanical_restraint_bool_within_2_days] FROM [fct].[psycop_coercion_within_2_days_feb2022_excl_days_after_cut_off]",
             database="USR_PS_FORSK",

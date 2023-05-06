@@ -5,7 +5,6 @@ import sys
 from pathlib import Path
 import wandb
 
-# had to add application - something's up with the paths
 from modules.specify_features import FeatureSpecifier
 from modules.loaders.load_coercion_df_with_prediction_times_and_outcome import (
     LoadCoercion,
@@ -36,7 +35,7 @@ def main():
     dataset."""
     feature_specs = FeatureSpecifier(
         project_info=project_info,
-        min_set_for_debug=False,  # Remember to set to False when generating full dataset
+        min_set_for_debug=True,  # Remember to set to False when generating full dataset
     ).get_feature_specs()
 
     flattened_df = create_flattened_dataset(
@@ -86,6 +85,7 @@ if __name__ == "__main__":
         config={
             "feature_set_path": project_info.feature_set_path,
         },
+        mode="offline",
     )
 
     main()
