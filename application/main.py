@@ -7,22 +7,22 @@ import wandb
 
 from modules.specify_features import FeatureSpecifier
 from modules.loaders.load_coercion_df_with_prediction_times_and_outcome import (
-    LoadCoercion,
+    load_coercion_prediction_times,
 )
-from psycop_feature_generation.application_modules.describe_flattened_dataset import (
+from psycop.feature_generation.application_modules.describe_flattened_dataset import (
     save_flattened_dataset_description_to_disk,
 )
-from psycop_feature_generation.application_modules.flatten_dataset import (
+from psycop.feature_generation.application_modules.flatten_dataset import (
     create_flattened_dataset,
 )
-from psycop_feature_generation.application_modules.loggers import init_root_logger
-from psycop_feature_generation.application_modules.project_setup import (
+from psycop.feature_generation.application_modules.loggers import init_root_logger
+from psycop.feature_generation.application_modules.project_setup import (
     get_project_info,
 )
-from psycop_feature_generation.application_modules.save_dataset_to_disk import (
+from psycop.feature_generation.application_modules.save_dataset_to_disk import (
     split_and_save_dataset_to_disk,
 )
-from psycop_feature_generation.application_modules.wandb_utils import (
+from psycop.feature_generation.application_modules.wandb_utils import (
     wandb_alert_on_exception,
 )
 
@@ -40,7 +40,7 @@ def main():
 
     flattened_df = create_flattened_dataset(
         feature_specs=feature_specs,
-        prediction_times_df=LoadCoercion.coercion_df(timestamps_only=False),
+        prediction_times_df=load_coercion_prediction_times(),
         drop_pred_times_with_insufficient_look_distance=False,
         project_info=project_info,
     )
