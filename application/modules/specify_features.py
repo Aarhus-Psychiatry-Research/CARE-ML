@@ -250,8 +250,8 @@ class FeatureSpecifier:
         return structured_sfi
 
     def _get_text_features_specs(self, resolve_multiple, interval_days):
-        """Get mean character length sfis specs"""
-        log.info("–––––––– Generating mean character length all sfis specs ––––––––")
+        """Get text feature specs"""
+        log.info("–––––––– Generating text feature specs ––––––––")
 
         text_features = PredictorGroupSpec(
             values_loader=["aktuelt_psykisk"],
@@ -263,14 +263,14 @@ class FeatureSpecifier:
         return text_features
 
     def _get_text_embedding_features_specs(self, resolve_multiple, interval_days):
-        """Get bow all sfis specs"""
-        log.info("–––––––– Generating bow all sfis specs ––––––––")
+        """Get all text embedding specs"""
+        log.info("–––––––– Generating text embedding specs ––––––––")
 
         bow_model = load_text_model(
-            filename="bow_psycop_train_aktuelt_psykisk_all_years_lowercase_stopwords_and_symbols_removed_sfi_type_All_sfis_ngram_range_12_max_df_10_min_df_1_max_features_100.pkl"
+            filename="bow_psycop_train_all_sfis_preprocessed_sfi_type_Aktueltpsykisk_ngram_range_12_max_df_10_min_df_1_max_features_500.pkl"
         )
         tfidf_model = load_text_model(
-            filename="tfidf_psycop_train_aktuelt_psykisk_all_years_lowercase_stopwords_and_symbols_removed_sfi_type_All_sfis_ngram_range_12_max_df_10_min_df_1_max_features_100.pkl"
+            filename="tfidf_psycop_train_all_sfis_preprocessed_sfi_type_Aktueltpsykisk_ngram_range_12_max_df_10_min_df_1_max_features_500.pkl"
         )
 
         return TextPredictorGroupSpec(
@@ -381,11 +381,11 @@ class FeatureSpecifier:
                 resolve_multiple="mean_len", interval_days=7
             )
 
-        resolve_multiple = "concatenate"
+        resolve_multiple = ["concatenate"]
         interval_days = [7, 30]
 
         text_features = self._get_text_features_specs(
-            resolve_multiple=["mean_len", "type_token_ratio"],
+            resolve_multiple=["mean_number_of_characters", "type_token_ratio"],
             interval_days=interval_days,
         )
 
