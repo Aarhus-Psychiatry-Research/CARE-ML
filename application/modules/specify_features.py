@@ -377,8 +377,8 @@ class FeatureSpecifier:
         log.info("–––––––– Generating text predictor specs ––––––––")
 
         if self.min_set_for_debug:
-            return self._get_text_features_specs(
-                resolve_multiple="mean_len", interval_days=7
+            return self._get_text_embedding_features_specs(
+                resolve_multiple=["concatenate"], interval_days=[7]
             )
 
         resolve_multiple = ["concatenate"]
