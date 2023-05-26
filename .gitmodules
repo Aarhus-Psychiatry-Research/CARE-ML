@@ -1,3 +1,0 @@
-[submodule "psycop-model-training"]
-    path = src/psycop-model-training
-    url = https://github.com/Aarhus-Psychiatry-Research/psycop-model-training
