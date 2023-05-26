@@ -1,0 +1,24 @@
+{
+  "template": "https://github.com/MartinBernstorff/swift-python-cookiecutter",
+  "commit": "0670b1ec02d7d1addd7a456f790c4d5e4b219521",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "project_name": "psycop-coercion",
+      "package_name": "psycop_coercion",
+      "friendly_name": "Psycop Coercion",
+      "author": "Signe Kirk Brødbæk & Sara Kolding",
+      "email": "signebroedbaek@gmail.com & sarakolding@live.dk",
+      "github_user": "signekb & sarakolding",
+      "version": "0.0.0",
+      "copyright_year": "2023",
+      "add_makefile": "y",
+      "license": "MIT",
+      "_copy_without_render": [
+        "*.github"
+      ],
+      "_template": "https://github.com/MartinBernstorff/swift-python-cookiecutter"
+    }
+  },
+  "directory": null
+}
