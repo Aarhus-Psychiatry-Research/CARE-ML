@@ -225,10 +225,17 @@ AUROC and AUPRC figures as well as confusion matrices as the ones shown below ca
 
 <img src="docs/figures/auroc_auprc_cm1.jpg" alt= “” class="center">
 
-SHAP figures, showing the mean absolute shap values for the top X features can bve created used the pipeline: application/pipelines/feature_importance/shap_summary_pipeline.py. 
+SHAP figures, showing the mean absolute shap values for the top X features can be created used the pipeline: application/pipelines/feature_importance/shap_summary_pipeline.py. 
+
 See example below: 
 
-<img src="docs/figures/shap.jpg" alt= “” class="center">
+<img src="docs/figures/shap_baseline.jpg" alt= “” class="center">
+
+Within this module, thorough evaluation, vital for clinical ML models, can be conducted. It is possible to calculate important evaluation metrics and visualise performance in various manners. 
+
+Furthermore, it is possible to visualise the top features based on mean absolute SHAP, as well as Information Gain. 
+
+Moreover, this moduel allows the user to visualise SHAP dependency plots for individual features. Due to the sensitivity of our data, we could not utilise dependency plots, since it would show individual scores which could jeopardise patient anonymity. 
 
 
 ## 🎓 Sources 
