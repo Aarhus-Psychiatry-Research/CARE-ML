@@ -28,7 +28,7 @@ In the following sections, we will present 0) the terminology at the core of thi
 We adopt the terminology used in the [timeseriesflattener](https://github.com/Aarhus-Psychiatry-Research/timeseriesflattener) package, which includes _lookbehind windows_, _lookahead windows_, and _aggregation functions_. 
 
 ### Lookahead and lookbehind windows 
-![image](docs/figures/tsf_terminology.jpg)
+![My_image](docs/figures/tsf_terminology.jpg)
 
 
 ## Installation
