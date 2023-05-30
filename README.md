@@ -6,23 +6,30 @@
 
 ## Predicting use of restraint on psychiatric inpatients using electronic health data and machine learning
 
-(Hvad er det, hvad er formålet, hvad kan den, hvem er den til)
+This repository was developed as a part of the product Master’s Thesis in Cognitive Science by: 
 
-This repository was developed as a part of the product Master’s Thesis in Cognitive Science by: Signe Kirk Brødbæk (201707519) and Sara Kolding (201708816)
+Signe Kirk Brødbæk (201707519) and Sara Kolding (201708816)
 
-For our thesis, we have developed this pipeline for training and evaluating prognostic supervised ML models for predicting the use of restraint on inpatients in the Central Denmark Region.
+### Motivation
+The use of three types of restraint, _physical_, _chemical_, and _mechanical_ restraint, has been increasing in Danish psychiatric units, despite the objective from the Ministry of Health and the Danish Regions to decrease the use of mechanical restraint, which can be seen in Figure 1 below. In recent years, In recent years, the literature on machine learning (ML) and prognostic prediction models in clinical contexts has expanded (Islam et al., 2020; Placido et al., 2023; Shamout et al., 2021), including studies identifying individual patients at high risk of being coerced (Danielsen et al., 2019; Günther et al., 2020; Hotzy et al., 2018). By offering early detection of at-risk patients, such models could enable staff to reallocate resources to a subgroup of patients, to avoid coercive interventions.
+   
+For our thesis, we built this pipeline for training and evaluating prognostic supervised ML models for predicting the use of restraint on inpatients in the Central Denmark Region, building upon the study by Danielsen et al. (2019) and utilising the frameworks of the [timeseriesflattener](https://github.com/Aarhus-Psychiatry-Research/timeseriesflattener) package and the code base for the PSCYOP projects [psycop-common](https://github.com/Aarhus-Psychiatry-Research/psycop-common).
 
-The motivation for the current study was twofold: we wanted to 1) build upon a sound framework focusing on pre-processing, data analysis, as well as transparent training and evaluation practices to increase generalisability to new data to 2) obtain interpretable ML models predicting restraint with the aim of helping staff identify at-risk inpatients to allocate scarce resources. 
 
-This repository builds upon the framework in [timeseriesflattener](https://github.com/Aarhus-Psychiatry-Research/timeseriesflattener) and the code base for the PSCYOP projects [psycop-common](https://github.com/Aarhus-Psychiatry-Research/psycop-common), as well as previous work by Danielsen et al. (2019).  
+![My Image](docs/figures/restraint_stats.jpg)
 
-Due data infrastructure of Central Denmark Region, we rely upon, the functionality of this project is tied to this specific use case. However, the framework is generalisable. Since the nature of psychiatric data is sensitive, we have created tutorials to showcase the pipeline. 
+Our focus has been to build a tool that is sound and transparent, including evaluations to examine the relationship between the most important features and the outcome, as well as potential biases. Due to the sensitivity of the data infrastructures utilised in the current study, the packages are designed for very specific use cases within the department of psychiatry in CDR. As a consequence, the pipeline is intended for a small target audience, and not generalisable across other regions in Denmark or in other countries. 
 
-In the following sections, we will present how to 1) install this package, 2) he project organisation, and 3= go through the functionality within each of the modules. 
+The specific pipeline can be utilised and adapted for future research by researchers in the CDR. However, the framework and considerations implemented in this pipeline, such as the temporal considerations, evaluating on a held-out test set and thorough evaluation, is generalisable and can be utilised in other ML contexts. 
 
-Hope you enjoy, 
+In the following sections, we will present 0) the terminology at the core of this pipeline, 1) how to install this package, 2) the project organisation, and 3) go through the functionality within each of module.
 
-Signe and Sara 
+## Terminology
+We adopt the terminology used in the [timeseriesflattener](https://github.com/Aarhus-Psychiatry-Research/timeseriesflattener) package, which includes _lookbehind windows_, _lookahead windows_, and _aggregation functions_. 
+
+### Lookahead and lookbehind windows 
+![image](docs/figures/tsf_terminology.jpg)
+
 
 ## Installation
 
@@ -44,7 +51,8 @@ pip install --src ./src -r src-requirements.txt
 ```
 
 ## Project Organization
-------------
+
+The project consist of the following overall structure, including four modules for 1) cohort generation, 2) feature generation, 3) model training, and 4) model evaluation. In the following sections, we will delineate the functionality of each module. 
 
     ├── LICENSE
     ├── README.md                <- The top-level README introducing this repository
@@ -69,11 +77,13 @@ pip install --src ./src -r src-requirements.txt
 
 ## Cohort Generation 
 
-First, the
+First, the cohort was defined with the following inclusion/exclusion criteria: 
 
-1. Use the template
+1. The patient had a minimum of one psychiatric admission which started between 1 January 2015 and 22 November 2021.
+2. The patient was >= 18 years at the time of admission.
+3. The patient experienced no instances of physical, chemical, or mechanical restraint in the 365 days before the admission start date. 
 
-![image](https://user-images.githubusercontent.com/8526086/208095705-81baa10b-b396-4fd7-a549-3b920ec18322.png)
+We defined the lookahead window as
 
 ## Feature Generation
 
@@ -85,6 +95,7 @@ In essence, the time series need to be *flattened* so that each prediction time 
 `timeseriesflattener` aims to simplify this process by providing an easy-to-use and fully-specified pipeline for flattening complex time series. 
 
 ## Model Training 
+
 
 ## Model Evaluation 
 
