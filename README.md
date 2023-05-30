@@ -15,8 +15,7 @@ The use of three types of restraint, _physical_, _chemical_, and _mechanical_ re
    
 For our thesis, we built this pipeline for training and evaluating prognostic supervised ML models for predicting the use of restraint on inpatients in the Central Denmark Region, building upon the study by Danielsen et al. (2019) and utilising the frameworks of the [timeseriesflattener](https://github.com/Aarhus-Psychiatry-Research/timeseriesflattener) package and the code base for the PSCYOP projects [psycop-common](https://github.com/Aarhus-Psychiatry-Research/psycop-common).
 
-
-![My Image](docs/figures/restraint_stats.jpg)
+<img src="docs/figures/restraint_stats.jpg" alt= “” width="70%" height="70%" class="center">
 
 Our focus has been to build a tool that is sound and transparent, including evaluations to examine the relationship between the most important features and the outcome, as well as potential biases. Due to the sensitivity of the data infrastructures utilised in the current study, the packages are designed for very specific use cases within the department of psychiatry in CDR. As a consequence, the pipeline is intended for a small target audience, and not generalisable across other regions in Denmark or in other countries. 
 
@@ -25,11 +24,34 @@ The specific pipeline can be utilised and adapted for future research by researc
 In the following sections, we will present 0) the terminology at the core of this pipeline, 1) how to install this package, 2) the project organisation, and 3) go through the functionality within each of module.
 
 ## Terminology
-We adopt the terminology used in the [timeseriesflattener](https://github.com/Aarhus-Psychiatry-Research/timeseriesflattener) package, which includes _lookbehind windows_, _lookahead windows_, and _aggregation functions_. 
+We adopt the terminology used in the [timeseriesflattener](https://github.com/Aarhus-Psychiatry-Research/timeseriesflattener) package, which includes _lookbehind and lookahead windows_, and _aggregation functions_. 
 
 ### Lookahead and lookbehind windows 
-![image](docs/figures/tsf_terminology.jpg)
+In A) below, the prediction time describes the time of prediction and acts as the reference point for the lookbehind and lookahead windows. The lookbehind window denotes how far back in time to look for feature values, while the lookahead window denotes how far into the future to look for outcome values. B) shows that when the outcome is found within the lookahead window, this constitutes a true positive within this framework. If the outcome occurs later than the lookahead window, this is a true negative
 
+<img src="docs/figures/tsf_terminology.jpg" alt= "" class="center" width="70%" height="70%">
+_Note. Visualisation of the timeseriesflattener terminology adapted from Bernstorff et al. (2023), reprinted with permission from the original authors._ 
+
+In the current project, we utilise lookbehind windows of varying lengths (between 1 day and 730 days) to create features. The labels were created with a lookahead of 2 days/48 hours. 
+
+### Aggregation functions
+When multiple feature values occur within a lookbehind window, there are several ways we can aggregate them. 
+The figuer figure denotes how features can be "flattened" when multiple data entries exist within a lookbehind window. In the blue lookbehind, the three hospital contactsoccur and these entries are aggregated into a tabular format by counting the number of contacts and summing the duration (in hours). Similarly, two values appear in the green lookbehind window, which is also aggregated as the count of hospital contacts and the sum of hours. 
+
+<img src="docs/figures/feature_flattening.jpg" alt= "" class="center" width="70%" height="70%">
+_Note. Figure developed in collaboration with the PSYCOP group._
+
+The aggregation functions utilised in this project include: 
+- Latest value
+- Count
+- Sum of hours
+- Boolean
+- Mean
+- Maximum
+- Minimum
+- Change per day (slope of linear regression)
+- Variance
+- Concatenate (for text features)
 
 ## Installation
 
@@ -75,7 +97,7 @@ The project consist of the following overall structure, including four modules f
     └──  Other configuration files
 
 
-## Cohort Generation 
+## Module 1: Cohort Generation 
 
 First, the cohort was defined with the following inclusion/exclusion criteria: 
 
@@ -83,10 +105,38 @@ First, the cohort was defined with the following inclusion/exclusion criteria:
 2. The patient was >= 18 years at the time of admission.
 3. The patient experienced no instances of physical, chemical, or mechanical restraint in the 365 days before the admission start date. 
 
-We defined the lookahead window as
+Then, target days were defined as: 
 
-## Feature Generation
+1. Either physical, chemical, or mechanical restraint occuring within 48 hours of the time of prediction
+3. Days after the first outcome instance was excluded, only 11.68% of admission with coercion in the PSYCOP cohort have only one instance of restraint), and predicting days after the first outcome offers less information to healthcare professionals. 
+4. Prediction days after mean admission length + 1 standard deviation (mean=16 days, sd=44 days, cut-off = 60 days) was excluded to remedy the imbalance in classes.
 
+As discussed in the thesis, these criteria could influence model prediction and clinical applicability. Within this module, you can change these criteria.
+
+In this module, admissions start out as being one row and is unpacked to include 1 row per day in the admission with the prediction time, excluding the first admisison day if it is after the prediction time of the current day (since we do not predict for patient's not admitted at time of prediction) and the last admission day if the patient is discharged before the time of prediction.
+
+See example below with the unpacking of an admission, where the first day is excluded and prediction time is 6:00 a.m.
+
+Before: 
+
+| adm_id | patient_id | admission_timestamp | discharge_timestamp |  outcome_timestamp   |
+| :----- | :--------- | :------------------ | :------------------ |  :-----------------  |
+| 1      |     1      | 2021-01-01 10:00:00 | 2021-01-05 16:00:00 |  2021-01-02 16:33:00 |
+
+
+After: 
+
+| adm_id | patient_id | admission_timestamp | discharge_timestamp |  outcome_timestamp   | prediction_timestamp | admission_day_counter | 
+| :----- | :--------- | :------------------ | :------------------ |  :-----------------  | :------------------- | :-------------------- |
+| 1      |     1      | 2021-01-01 10:00:00 | 2021-01-05 16:00:00 |  2021-01-02 16:33:00 | 2021-01-02 06:00:00  |  2                    |
+| 1      |     1      | 2021-01-01 10:00:00 | 2021-01-05 16:00:00 |  2021-01-02 16:33:00 | 2021-01-03 06:00:00  |  3                    |
+| 1      |     1      | 2021-01-01 10:00:00 | 2021-01-05 16:00:00 |  2021-01-02 16:33:00 | 2021-01-04 06:00:00  |  4                    |
+| 1      |     1      | 2021-01-01 10:00:00 | 2021-01-05 16:00:00 |  2021-01-02 16:33:00 | 2021-01-04 06:00:00  |  5                    |
+
+
+## Module 2: Feature Generation
+
+In this module, the cohort, which includes  is linked to other variables to
 
 Time series from e.g. electronic health records often have a large number of variables, are sampled at irregular intervals and tend to have a large number of missing values. Before this type of data can be used for prediction modelling with machine learning methods such as logistic regression or XGBoost, the data needs to be reshaped. 
 
@@ -94,10 +144,10 @@ In essence, the time series need to be *flattened* so that each prediction time 
 
 `timeseriesflattener` aims to simplify this process by providing an easy-to-use and fully-specified pipeline for flattening complex time series. 
 
-## Model Training 
+## Module 3: Model Training 
 
 
-## Model Evaluation 
+## Module 4: Model Evaluation 
 
 ## 🔧 Installation
 To get started using timeseriesflattener simply install it using pip by running the following line in your terminal:
