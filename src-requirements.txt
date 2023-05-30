@@ -1,1 +1,2 @@
 -e git+https://github.com/Aarhus-Psychiatry-Research/psycop-common#egg=psycop
+-e git+https://github.com/Aarhus-Psychiatry-Research/timeseriesflattener.git#egg=timeseriesflattener
