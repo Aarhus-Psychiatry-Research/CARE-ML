@@ -19,13 +19,13 @@ Signe Kirk Brødbæk (201707519) and Sara Kolding (201708816)
 
 [4. Project Organization](#project_organisation)
 
-[5. Module 1: Cohort Generation](#mod1)
+[4.1 Module: Cohort Generation](#mod1)
 
-[6. Module 2: Feature Generation](#mod2)
+[4.2 Module: Feature Generation](#mod2)
 
-[7. Module 3: Model Training](#mod3)
+[4.3 Module: Model Training](#mod3)
 
-[8. Module 4: Model Evaluation ](#mod4)
+[4.4 Module: Model Evaluation ](#mod4)
 
 
  <a id="motivation"></a>
@@ -55,6 +55,7 @@ _Note. Visualisation of the timeseriesflattener terminology adapted from Bernsto
 
 In the current project, we utilise lookbehind windows of varying lengths (between 1 day and 730 days) to create features. The labels were created with a lookahead of 2 days/48 hours. 
 
+<a id="aggf"></a>
 ### 2.2 Aggregation functions
 When multiple feature values occur within a lookbehind window, there are several ways we can aggregate them. 
 The figuer figure denotes how features can be "flattened" when multiple data entries exist within a lookbehind window. In the blue lookbehind, the three suicide risk assessments are completed and logged. These entries are aggregated into a tabular format by counting the number of risk scores and summing scores. Similarly, two scores appear in the green lookbehind window, which is also aggregated as the count of risk scores and the sum of scores. 
@@ -119,7 +120,7 @@ The project consist of the following overall structure, including four modules f
     └── Other configuration files
 
 <a id="mod1"></a>
-## 5. Module 1: Cohort Generation 
+## 4.1 Module 1: Cohort Generation 
 
 First, the cohort was defined with the following inclusion/exclusion criteria: 
 
@@ -158,7 +159,7 @@ After:
 | 1      |     1      | 2021-01-01 05:00:00 | 2021-01-05 16:00:00 |  2021-01-04 16:33:00 | 2021-01-04 06:00:00  |  4                    |  1      |
 
 <a id="mod2"></a>
-## 6. Module 2: Feature Generation
+## 4.2 Module: Feature Generation
 
 In this module, the cohort is linked to other variables to create features based on the defined lookbehind windows and aggregation functions, using the _timeseriesflattener_ package and data loaders from the _psycop-commn_ package. 
 
@@ -166,7 +167,7 @@ _timeseriesflattener_ was created to handle data from electronic health records,
 
 In addition to aggregation functions, a _fallback_, i.e. a value to insert when no observations is found within a window, is chosen. We used fallbacks of 0 (e.g., for hospital contacts) and NA (for texts and structured SFI's where a 0 score is different from a missing value). 
 
-If we use the example in the figure in the Figure in [Section 2.2](#terminology), the lookbehind window is 2 days, with three suicide risk assessment scores within the first (blue) lookbehind and two risk scores within the second (green) lookbehind. The data entries can be aggregated in multiple ways. Here, we aggregate them by counting the number of contacts and summing the hours of contacts. The fallback is set to NA, since a score of 0 is meaningful for this score. 
+If we use the example in the figure in the Figure in [Section 2.2](#aggf), the lookbehind window is 2 days, with three suicide risk assessment scores within the first (blue) lookbehind and two risk scores within the second (green) lookbehind. The data entries can be aggregated in multiple ways. Here, we aggregate them by counting the number of contacts and summing the hours of contacts. The fallback is set to NA, since a score of 0 is meaningful for this score. 
 
 The features are appended on the cohort dataframe with one admission from the previous example: 
 
@@ -199,7 +200,7 @@ After the feature were generated, the features are split into a training dataset
 *TF-IDF: Term frequency-inverse document frequency 
 
 <a id="mod3"></a>
-## 7. Module 3: Model Training 
+## 4.3 Module: Model Training 
 
 We used two model types: elastic net logistic regression and XGBoost. Both were trained using 5-fold cross-validation, with a hyperparameter search including tuning of various preprocessing parameters, predictor selection methods, and model hyperparameters. 
 The search was run on a server 30-core Intel Xeon CPU, 512GB of RAM and an NVIDIA A100 GPU, and was concluded when each of the four models had been cross-validated 300 times with various configurations of hyperparameters. 
@@ -213,14 +214,17 @@ Example of a WandB visualisation of a hyperparameter search for XGBoost:
 <img src="docs/figures/wandb_example.jpg" alt= “” width="60%" height="60%" class="center">
 
 <a id="mod4"></a>
-## 8. Module 4: Model Evaluation 
+## 4.4 Module: Model Evaluation 
 
 After the models had been trained, they were evaluated on a held-out test set, comprising 15% of the cohort, using the Model Evaluation module. 
 This modules mostly constitues visualisations of performance, robustness across different splits (sex, age groups, and time), as well as feature importance. 
 
 In the application/pipelines subfolder, the user can find pipelines for producing the different figures. 
 
-For example, 
+AUROC and AUPRC figures as well as confusion matrices as the ones shown below can be created using the performance pipelines (application/pipelines/performance).
+
+<img src="docs/figures/auroc_auprc_cm.jpg" alt= “” class="center">
+
 
 ## 🎓 Sources 
 
