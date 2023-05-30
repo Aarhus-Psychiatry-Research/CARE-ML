@@ -222,23 +222,6 @@ In the application/pipelines subfolder, the user can find pipelines for producin
 
 For example, 
 
-
-
-## 📖 Documentation
-
-| Documentation          |                                                                                        |
-| ---------------------- | -------------------------------------------------------------------------------------- |
-| 🎓 **[Tutorial]**       | Simple and advanced tutorials to get you started using `timeseriesflattener`           |
-| 🎛 **[General docs]** | The detailed reference for timeseriesflattener's API. |
-| 🙋 **[FAQ]**            | Frequently asked question                                                              |
-| 🗺️ **[Roadmap]**        | Kanban board for the roadmap for the project                                           |
-
-[Tutorial]: https://aarhus-psychiatry-research.github.io/timeseriesflattener/tutorials.html
-[General docs]: https://Aarhus-Psychiatry-Research.github.io/timeseriesflattener/
-[FAQ]: https://Aarhus-Psychiatry-Research.github.io/timeseriesflattener/faq.html
-[Roadmap]: https://github.com/orgs/Aarhus-Psychiatry-Research/projects/11/views/1
-
-
 ## 🎓 Sources 
 
 Danielsen, A. A., Fenger, M.H.J., Østerggard, S.D., Nielbo, K.L., & Mors, O. (2019). Predicting mechanical restraint of psychiatric inpatients by applying machine learning on electronic health data. Acta Psychiatrica Scandinavica, 147–157. https://doi.org/10.1111/acps.13061
