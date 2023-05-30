@@ -30,7 +30,7 @@ Signe Kirk Brødbæk (201707519) and Sara Kolding (201708816)
 
  <a id="motivation"></a>
 ## 1. Motivation
-The use of three types of restraint, _physical_, _chemical_, and _mechanical_ restraint, has been increasing in Danish psychiatric units, despite the objective from the Ministry of Health and the Danish Regions to decrease the use of mechanical restraint, which can be seen in Figure 1 below. In recent years, In recent years, the literature on machine learning (ML) and prognostic prediction models in clinical contexts has expanded (Islam et al., 2020; Placido et al., 2023; Shamout et al., 2021), including studies identifying individual patients at high risk of being coerced (Danielsen et al., 2019; Günther et al., 2020; Hotzy et al., 2018). By offering early detection of at-risk patients, such models could enable staff to reallocate resources to a subgroup of patients, to avoid coercive interventions.
+The use of three types of restraint, _physical_, _chemical_, and _mechanical_ restraint, has been increasing in Danish psychiatric units, despite the objective from the Ministry of Health and the Danish Regions to decrease the use of mechanical restraint, which can be seen in Figure 1 below. In recent years, In recent years, the literature on machine learning (ML) and prognostic prediction models in clinical contexts has expanded, including studies identifying individual patients at high risk of being coerced (Danielsen et al., 2019). By offering early detection of at-risk patients, such models could enable staff to reallocate resources to a subgroup of patients, to avoid coercive interventions.
    
 For our thesis, we built this pipeline for training and evaluating prognostic supervised ML models for predicting the use of restraint on inpatients in the Central Denmark Region, building upon the study by Danielsen et al. (2019) and utilising the frameworks of the [timeseriesflattener](https://github.com/Aarhus-Psychiatry-Research/timeseriesflattener) package and the code base for the PSCYOP projects [psycop-common](https://github.com/Aarhus-Psychiatry-Research/psycop-common).
 
@@ -211,7 +211,7 @@ This module is set up with several configs (see folder _config_ ) which allows t
 The project i set up to be run using Weights and Biases (WandB) to create visualisations of the hyperparameter tuning process. However, due to a shutdown of the internet connection from the server we used, this was not doable for search conducted for the thesis project. 
 
 Example of a WandB visualisation of a hyperparameter search for XGBoost: 
-<img src="docs/figures/wandb_example.jpg" alt= “” width="60%" height="60%" class="center">
+<img src="docs/figures/wandb_example.jpg" alt= “” class="center">
 
 <a id="mod4"></a>
 ## 4.4 Module: Model Evaluation 
@@ -221,9 +221,14 @@ This modules mostly constitues visualisations of performance, robustness across 
 
 In the application/pipelines subfolder, the user can find pipelines for producing the different figures. 
 
-AUROC and AUPRC figures as well as confusion matrices as the ones shown below can be created using the performance pipelines (application/pipelines/performance).
+AUROC and AUPRC figures as well as confusion matrices as the ones shown below can be created using the performance pipelines in the folder found at: application/pipelines/performance. 
 
-<img src="docs/figures/auroc_auprc_cm.jpg" alt= “” class="center">
+<img src="docs/figures/auroc_auprc_cm1.jpg" alt= “” class="center">
+
+SHAP figures, showing the mean absolute shap values for the top X features can bve created used the pipeline: application/pipelines/feature_importance/shap_summary_pipeline.py. 
+See example below: 
+
+<img src="docs/figures/shap.jpg" alt= “” class="center">
 
 
 ## 🎓 Sources 
