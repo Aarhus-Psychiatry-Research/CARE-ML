@@ -162,13 +162,31 @@ After:
 
 In this module, the cohort is linked to other variables to create features based on the defined lookbehind windows and aggregation functions, using the _timeseriesflattener_ package and data loaders from the _psycop-commn_ package. 
 
-_timeseriesflattener_ was created to handle data from electronic health records, which might have many missing values and are sampled irregularly. By defining windows to look for values and how such values should be aggregated, _timeseriesflattener_ *flattens* the data, as described in Section [2. Terminology](#terminology). In addition to aggregation functions, a _fallback_, i.e. a value to insert when no observations is found within a window, is chosen. We used fallbacks of 0 (e.g., for hospital contacts) and NA (for texts and structured SFI's where a 0 score is different from a missing value). 
+_timeseriesflattener_ was created to handle data from electronic health records, which might have many missing values and are sampled irregularly. By defining windows to look for values and how such values should be aggregated, _timeseriesflattener_ *flattens* the data, as described in Section [2. Terminology](#terminology). 
+
+In addition to aggregation functions, a _fallback_, i.e. a value to insert when no observations is found within a window, is chosen. We used fallbacks of 0 (e.g., for hospital contacts) and NA (for texts and structured SFI's where a 0 score is different from a missing value). 
+
+If we use the example in the figure in the Figure in [Section 2.2](#terminology), the lookbehind window is 2 days, with three hospital contacts within the first (blue) lookbehind and two hospital contacts within the second (green) lookbehind. The data entries can be aggregated in multiple ways. Here, we aggregate them by counting the number of contacts and summing the hours of contacts. 
+
+The features are appended on the cohort dataframe with one admission from the previous example: 
+
+Contact dataframe: 
+| patient_id | contact_timestamp   | duration  |  
+| :--------- | :------------------ | :-------- | 
+|     1      | 2020-12-30 10:00:00 | 2 |
+|     1      | 2021-12-30 10:00:00 | 1 |
+|     1      | 2021-12-31 10:00:00 | 3 |
+|     1      | 2021-01-01 10:00:00 | 2 |
 
 
 
+Appended to the cohort dataframe: 
 
-For example, 
-
+| adm_id | patient_id | admission_timestamp | discharge_timestamp |  outcome_timestamp   | prediction_timestamp | admission_day_counter | outcome | 
+| :----- | :--------- | :------------------ | :------------------ |  :-----------------  | :------------------- | :-------------------- | :-----  |
+| 1      |     1      | 2021-01-01 10:00:00 | 2021-01-05 16:00:00 |  2021-01-04 16:33:00 | 2021-01-02 06:00:00  |  2                    |  0      |
+| 1      |     1      | 2021-01-01 10:00:00 | 2021-01-05 16:00:00 |  2021-01-04 16:33:00 | 2021-01-03 06:00:00  |  3                    |  1      |
+| 1      |     1      | 2021-01-01 10:00:00 | 2021-01-05 16:00:00 |  2021-01-04 16:33:00 | 2021-01-04 06:00:00  |  4                    |  1      |
 
 <a id="mod3"></a>
 ## 7. Module 3: Model Training 
