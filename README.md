@@ -57,7 +57,7 @@ In the current project, we utilise lookbehind windows of varying lengths (betwee
 
 ### 2.2 Aggregation functions
 When multiple feature values occur within a lookbehind window, there are several ways we can aggregate them. 
-The figuer figure denotes how features can be "flattened" when multiple data entries exist within a lookbehind window. In the blue lookbehind, the three hospital contactsoccur and these entries are aggregated into a tabular format by counting the number of contacts and summing the duration (in hours). Similarly, two values appear in the green lookbehind window, which is also aggregated as the count of hospital contacts and the sum of hours. 
+The figuer figure denotes how features can be "flattened" when multiple data entries exist within a lookbehind window. In the blue lookbehind, the three suicide risk assessments are completed and logged. These entries are aggregated into a tabular format by counting the number of risk scores and summing scores. Similarly, two scores appear in the green lookbehind window, which is also aggregated as the count of risk scores and the sum of scores. 
 
 <img src="docs/figures/feature_flattening.jpg" alt= "" class="center" width="60%" height="60%">
 
@@ -138,24 +138,24 @@ As discussed in the thesis, these criteria could influence model prediction and 
 In this module, admissions start out as being one row and is unpacked to include 1 row per day in the admission with the prediction time, excluding the first admisison day if it is after the prediction time of the current day and the last admission day if the patient is discharged before the time of prediction.
 
 See example below with the unpacking of an admission, where the time of prediction 6:00 a.m. and lookahead is 48 hours.  
-- The first day of the admission is removed, since the patient was admitted after the time of prediction. 
-- The fifth/last day of admisision is removed, since it is after the outcome. 
-- Note that since the lookahead is 48 hours, two days are denoted target days (outcome = 1). 
+
+Note: 
+- The fifth/last day of admisision is removed, since days after the outcome is removed 
+- Since the lookahead is 48 hours, two days are denoted target days (outcome = 1)
 
 Before: 
-
 | adm_id | patient_id | admission_timestamp | discharge_timestamp |  outcome_timestamp   |
 | :----- | :--------- | :------------------ | :------------------ |  :-----------------  |
-| 1      |     1      | 2021-01-01 10:00:00 | 2021-01-05 16:00:00 |  2021-01-04 16:33:00 |
+| 1      |     1      | 2021-01-01 05:00:00 | 2021-01-05 16:00:00 |  2021-01-04 16:33:00 |
 
 
 After: 
-
 | adm_id | patient_id | admission_timestamp | discharge_timestamp |  outcome_timestamp   | prediction_timestamp | admission_day_counter | outcome | 
 | :----- | :--------- | :------------------ | :------------------ |  :-----------------  | :------------------- | :-------------------- | :-----  |
-| 1      |     1      | 2021-01-01 10:00:00 | 2021-01-05 16:00:00 |  2021-01-04 16:33:00 | 2021-01-02 06:00:00  |  2                    |  0      |
-| 1      |     1      | 2021-01-01 10:00:00 | 2021-01-05 16:00:00 |  2021-01-04 16:33:00 | 2021-01-03 06:00:00  |  3                    |  1      |
-| 1      |     1      | 2021-01-01 10:00:00 | 2021-01-05 16:00:00 |  2021-01-04 16:33:00 | 2021-01-04 06:00:00  |  4                    |  1      |
+| 1      |     1      | 2021-01-01 05:00:00 | 2021-01-05 16:00:00 |  2021-01-04 16:33:00 | 2021-01-02 06:00:00  |  1                    |  0      |
+| 1      |     1      | 2021-01-01 05:00:00 | 2021-01-05 16:00:00 |  2021-01-04 16:33:00 | 2021-01-02 06:00:00  |  2                    |  0      |
+| 1      |     1      | 2021-01-01 05:00:00 | 2021-01-05 16:00:00 |  2021-01-04 16:33:00 | 2021-01-03 06:00:00  |  3                    |  1      |
+| 1      |     1      | 2021-01-01 05:00:00 | 2021-01-05 16:00:00 |  2021-01-04 16:33:00 | 2021-01-04 06:00:00  |  4                    |  1      |
 
 <a id="mod2"></a>
 ## 6. Module 2: Feature Generation
@@ -166,30 +166,49 @@ _timeseriesflattener_ was created to handle data from electronic health records,
 
 In addition to aggregation functions, a _fallback_, i.e. a value to insert when no observations is found within a window, is chosen. We used fallbacks of 0 (e.g., for hospital contacts) and NA (for texts and structured SFI's where a 0 score is different from a missing value). 
 
-If we use the example in the figure in the Figure in [Section 2.2](#terminology), the lookbehind window is 2 days, with three hospital contacts within the first (blue) lookbehind and two hospital contacts within the second (green) lookbehind. The data entries can be aggregated in multiple ways. Here, we aggregate them by counting the number of contacts and summing the hours of contacts. 
+If we use the example in the figure in the Figure in [Section 2.2](#terminology), the lookbehind window is 2 days, with three suicide risk assessment scores within the first (blue) lookbehind and two risk scores within the second (green) lookbehind. The data entries can be aggregated in multiple ways. Here, we aggregate them by counting the number of contacts and summing the hours of contacts. The fallback is set to NA, since a score of 0 is meaningful for this score. 
 
 The features are appended on the cohort dataframe with one admission from the previous example: 
 
-Contact dataframe: 
-| patient_id | contact_timestamp   | duration  |  
-| :--------- | :------------------ | :-------- | 
+Suicide risk assessment dataframe: 
+| patient_id | risk_timestamp      | Score  |  
+| :--------- | :------------------ | :----- | 
 |     1      | 2020-12-30 10:00:00 | 2 |
-|     1      | 2021-12-30 10:00:00 | 1 |
-|     1      | 2021-12-31 10:00:00 | 3 |
-|     1      | 2021-01-01 10:00:00 | 2 |
+|     1      | 2021-12-30 10:00:00 | 0 |
+|     1      | 2021-12-31 10:00:00 | 2 |
+|     1      | 2021-01-01 10:00:00 | 3 |
 
 
 
 Appended to the cohort dataframe: 
+| adm_id | patient_id | admission_timestamp | discharge_timestamp |  outcome_timestamp   | prediction_timestamp | admission_day_counter | outcome | pred_risk_within_2_days_count | pred_risk_within_2_days_sum |
+| :----- | :--------- | :------------------ | :------------------ |  :-----------------  | :------------------- | :-------------------- | :-----  | :---- | :---- |
+| 1      |     1      | 2021-01-01 05:00:00 | 2021-01-05 16:00:00 |  2021-01-04 16:33:00 | 2021-01-01 06:00:00  |  1                    |  0      | 3     |   3   |
+| 1      |     1      | 2021-01-01 05:00:00 | 2021-01-05 16:00:00 |  2021-01-04 16:33:00 | 2021-01-02 06:00:00  |  2                    |  0      | 2     |   5   |  
+| 1      |     1      | 2021-01-01 05:00:00 | 2021-01-05 16:00:00 |  2021-01-04 16:33:00 | 2021-01-03 06:00:00  |  3                    |  1      | 1     |   3   |
+| 1      |     1      | 2021-01-01 05:00:00 | 2021-01-05 16:00:00 |  2021-01-04 16:33:00 | 2021-01-04 06:00:00  |  4                    |  1      | 0     |   0   |
 
-| adm_id | patient_id | admission_timestamp | discharge_timestamp |  outcome_timestamp   | prediction_timestamp | admission_day_counter | outcome | 
-| :----- | :--------- | :------------------ | :------------------ |  :-----------------  | :------------------- | :-------------------- | :-----  |
-| 1      |     1      | 2021-01-01 10:00:00 | 2021-01-05 16:00:00 |  2021-01-04 16:33:00 | 2021-01-02 06:00:00  |  2                    |  0      |
-| 1      |     1      | 2021-01-01 10:00:00 | 2021-01-05 16:00:00 |  2021-01-04 16:33:00 | 2021-01-03 06:00:00  |  3                    |  1      |
-| 1      |     1      | 2021-01-01 10:00:00 | 2021-01-05 16:00:00 |  2021-01-04 16:33:00 | 2021-01-04 06:00:00  |  4                    |  1      |
+In this module, a variety of loaders (loading data from the data infrastructure used in CDR, for users with access) can be utilised. Among others, it is possible to create features based on demographics, medication, coercion, hospital contacts, and assessment scores ("Sundhedsfagligt Indhold, SFIs). Features based on unstructured text can also be created with this module. 
+
+For the thesis project, we created two feature sets using this module: 
+- A _baseline_ feature set solely consisting of features based on structured data 
+- A _text-enhanced_ feature set consisting of features based on bag-of-words and TF-IDF* weighting along with the baseline features
+
+After the feature were generated, the features are split into a training dataset and a held-out test set. We used a 85%-15% split. 
+
+*TF-IDF: Term frequency-inverse document frequency 
 
 <a id="mod3"></a>
 ## 7. Module 3: Model Training 
+
+We used two model types: elastic net logistic regression and XGBoost. Both were trained using 5-fold cross-validation, with a hyperparameter search including tuning of various preprocessing parameters, predictor selection methods, and model hyperparameters. 
+The search was run on a server 30-core Intel Xeon CPU, 512GB of RAM and an NVIDIA A100 GPU, and was concluded when each of the four models had been cross-validated 300 times with various configurations of hyperparameters. 
+It would not be feasible to run such a search on a local computer. However, it is possible to run a single model to see the pipeline using the script _train_model_from_application.py_. 
+
+The project i set up to be run using Weights and Biases (WandB) to create visualisations of the hyperparameter tuning process. However, due to a shutdown of the internet connection from the server we used, this was not doable for the thesis project. 
+
+Example of a WandB visualisation of a hyperparameter search for XGBoost: 
+<img src="docs/figures/wand_example.jpg" alt= “” width="60%" height="60%" class="center">
 
 
 
