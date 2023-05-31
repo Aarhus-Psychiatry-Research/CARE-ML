@@ -7,7 +7,7 @@ def test_feature_name_to_readable():
     feature_names = [
         "pred_broeset_violence_checklist_within_3_days_mean_fallback_nan",  # special character
         "pred_skema_1_within_1_days_bool_fallback_0",  # feature mapping
-        "pred_paa_grund_af_farlighed_within_3_days_bool_fallback_0",  # other feature mapping
+        "pred_paa_grund_af_farlighed_within_3_days_bool_fallback_0",  # dangerous feature mapping
         "pred_physical_visits_to_psychiatry_within_7_days_bool_fallback_0",  # visit mapping
         "pred_aktuelt_psykisk-besøg_CountVectorizer_within_7_days_concatenate_fallback_nan",  # CountVectorizer, feature mapping
         "pred_aktuelt_psykisk-pt fortæller_TfidfVectorizer_within_30_days_concatenate_fallback_nan",  # TfIdfVectorizer, feature mapping
