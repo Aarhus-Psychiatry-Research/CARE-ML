@@ -6,7 +6,7 @@ from datetime import date
 
 import numpy as np
 import pandas as pd
-from CARE_ML.cohort_creation.utils import (
+from care_ml.cohort_creation.utils import (
     concat_readmissions,
     first_coercion_within_admission,
     unpack_adm_days,

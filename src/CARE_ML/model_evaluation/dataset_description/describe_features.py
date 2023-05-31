@@ -12,7 +12,7 @@ project_info = get_project_info(
     project_name="coercion",
 )
 
-from CARE_ML.feature_generation.modules.specify_features import FeatureSpecifier
+from care_ml.feature_generation.modules.specify_features import FeatureSpecifier
 
 feature_specs = FeatureSpecifier(
     project_info=project_info,
@@ -25,7 +25,7 @@ selected_specs = [
     if "pred" in spec.get_col_str() or "outc" in spec.get_col_str()
 ]
 
-from CARE_ML.model_evaluation.config import TEXT_EVAL_RUN, TEXT_TABLES_PATH
+from care_ml.model_evaluation.config import TEXT_EVAL_RUN, TEXT_TABLES_PATH
 from psycop.common.feature_generation.data_checks.flattened.feature_describer import (
     save_feature_descriptive_stats_from_dir,
 )

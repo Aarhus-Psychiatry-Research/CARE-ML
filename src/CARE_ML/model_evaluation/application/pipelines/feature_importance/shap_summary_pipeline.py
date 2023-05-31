@@ -1,14 +1,14 @@
 from typing import Literal
 
-from CARE_ML.model_evaluation.config import EVAL_RUN, TEXT_EVAL_RUN
-from CARE_ML.model_evaluation.data.load_true_data import (
+from care_ml.model_evaluation.config import EVAL_RUN, TEXT_EVAL_RUN
+from care_ml.model_evaluation.data.load_true_data import (
     load_file_from_pkl,
     load_fullconfig,
 )
-from CARE_ML.model_evaluation.figures.feature_importance.shap.get_shap_values import (
+from care_ml.model_evaluation.figures.feature_importance.shap.get_shap_values import (
     generate_shap_values,
 )
-from CARE_ML.model_evaluation.figures.feature_importance.shap.shap_plots import (
+from care_ml.model_evaluation.figures.feature_importance.shap.shap_plots import (
     plot_shap_summary,
 )
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema

@@ -2,7 +2,7 @@
 
 from typing import Literal
 
-from CARE_ML.model_evaluation.config import (
+from care_ml.model_evaluation.config import (
     EVAL_RUN,
     FIGURES_PATH,
     TABLES_PATH,
@@ -10,10 +10,10 @@ from CARE_ML.model_evaluation.config import (
     TEXT_FIGURES_PATH,
     TEXT_TABLES_PATH,
 )
-from CARE_ML.model_evaluation.data.load_true_data import (
+from care_ml.model_evaluation.data.load_true_data import (
     load_file_from_pkl,
 )
-from CARE_ML.model_evaluation.figures.feature_importance.gain_plot import (
+from care_ml.model_evaluation.figures.feature_importance.gain_plot import (
     plot_gain,
 )
 from psycop.common.model_evaluation.feature_importance.feature_importance_table import (

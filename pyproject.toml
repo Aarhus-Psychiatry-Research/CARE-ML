@@ -3,9 +3,9 @@ requires = ["setuptools>=61.0.0", "wheel", "setuptools_scm"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "CARE-ML"
+name = "care-ml"
 version = "0.0.0"
-description = "CARE-ML"
+description = "care-ml"
 authors = [
   {name = "Signe Kirk Brødbæk", email = "signebroedbaek@gmail.com"},
   {name = "Sara Kolding", email = "sarakolding@live.dk"}
@@ -85,9 +85,9 @@ src = [
 ]
 
 [project.urls]
-homepage = "https://github.com/Aarhus-Psychiatry-Research/CARE-ML"
-repository = "https://github.com/Aarhus-Psychiatry-Research/CARE-ML"
-documentation = "https://Aarhus-Psychiatry-Research.github.io/CARE-ML/"
+homepage = "https://github.com/Aarhus-Psychiatry-Research/care-ml"
+repository = "https://github.com/Aarhus-Psychiatry-Research/care-ml"
+documentation = "https://Aarhus-Psychiatry-Research.github.io/care-ml/"
 
 [tool.coverage.run]
 omit = [
@@ -221,8 +221,8 @@ envlist = py{39,310}
 extras = tests, dev, src, type
 use_develop = true
 commands =
-  test: pytest src/CARE_ML -n auto {posargs:test}
-  type: pyright src/CARE_ML
+  test: pytest src/care_ml -n auto {posargs:test}
+  type: pyright src/care_ml
   
 [testenv:docs]
 description: build docs

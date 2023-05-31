@@ -8,7 +8,7 @@ Labels: Kig to dage frem
 from datetime import date
 
 import pandas as pd
-from CARE_ML.cohort_creation.utils import create_labels
+from care_ml.cohort_creation.utils import create_labels
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 from psycop_ml_utils.sql.writer import write_df_to_sql
 

@@ -25,7 +25,7 @@ src/timeseriesflattener
 *.html
 *.csv
 *.xslx
-src/CARE-ML.paper_outputs.egg-info
+src/care-ml.paper_outputs.egg-info
 src/coercion_baseline_eval.egg-info
 .idea
 .vscode

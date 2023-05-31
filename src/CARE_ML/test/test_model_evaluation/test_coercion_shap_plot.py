@@ -1,7 +1,6 @@
 import numpy as np
 import polars as pl
-
-from CARE_ML.model_evaluation.figures.feature_importance.shap.shap_plots import (
+from care_ml.model_evaluation.figures.feature_importance.shap.shap_plots import (
     plot_shap_for_feature,
 )
 

@@ -1,5 +1,5 @@
-from CARE_ML.model_evaluation.best_runs import best_run
-from CARE_ML.model_evaluation.data.load_true_data import load_fullconfig
+from care_ml.model_evaluation.best_runs import best_run
+from care_ml.model_evaluation.data.load_true_data import load_fullconfig
 from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
 from psycop.common.model_training.data_loader.data_loader import DataLoader
 

@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pandas as pd
 import plotnine as pn
-from CARE_ML.model_evaluation.config import (
+from care_ml.model_evaluation.config import (
     COLOURS,
     EVAL_RUN,
     MODEL_NAME,
@@ -11,7 +11,7 @@ from CARE_ML.model_evaluation.config import (
     TEXT_EVAL_RUN,
     TEXT_TABLES_PATH,
 )
-from CARE_ML.utils.best_runs import Run
+from care_ml.utils.best_runs import Run
 from psycop.common.model_evaluation.confusion_matrix import confusion_matrix
 from psycop.common.model_evaluation.confusion_matrix.confusion_matrix import (
     ConfusionMatrix,

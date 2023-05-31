@@ -7,10 +7,10 @@
     "author": "Signe Kirk Brødbæk & Sara Kolding",
     "copyright_year": "2023",
     "email": "signebroedbaek@gmail.com & sarakolding@live.dk",
-    "friendly_name": "CARE-ML",
+    "friendly_name": "care-ml",
     "github_user": "signekb & sarakolding",
     "license": "MIT",
-    "package_name": "CARE_ML",
-    "project_name": "CARE-ML",
+    "package_name": "care_ml",
+    "project_name": "care-ml",
     "version": "1.0.0"
 }

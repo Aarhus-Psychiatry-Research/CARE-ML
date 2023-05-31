@@ -1,16 +1,16 @@
-<a href="https://github.com/Aarhus-Psychiatry-Research/CARE-ML"><img src="docs/figures/care-ml-logo.png" width="220" align="right"/></a>
+<a href="https://github.com/Aarhus-Psychiatry-Research/care-ml"><img src="docs/figures/care-ml-logo.png" width="220" align="right"/></a>
 
 ![python versions](https://img.shields.io/badge/Python-%3E=3.9-blue)
 [![Black](https://img.shields.io/badge/code%20style-black-000000.svg)][black]
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v2.json)](https://github.com/charliermarsh/ruff)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
-[![Tests](https://github.com/Aarhus-Psychiatry-Research/CARE-ML/actions/workflows/tests.yml/badge.svg)][tests]
+[![Tests](https://github.com/Aarhus-Psychiatry-Research/care-ml/actions/workflows/tests.yml/badge.svg)][tests]
 
-[pypi status]: https://pypi.org/project/CARE-ML/
+[pypi status]: https://pypi.org/project/care-ml/
 [tests]: https://github.com/Aarhus-Psychiatry-Research/psycop-common/actions?workflow=Tests
 [black]: https://github.com/psf/black
 
-# CARE-ML: Predicting use of restraint on psychiatric inpatients using electronic health data and machine learning
+# care-ml: Predicting use of restraint on psychiatric inpatients using electronic health data and machine learning
 
 This repository was developed as a part of the product Master’s Thesis in Cognitive Science by: 
 
@@ -40,7 +40,7 @@ The use restraint, has been increasing in Danish psychiatric units, despite the 
    
 <img src="docs/figures/restraint_stats.jpg" alt= “” width="70%" height="70%" class="center">
 
-In our thesis, we built a pipeline for training and evaluating prognostic supervised ML models for predicting the use of restraint on inpatients in the Central Denmark Region (CDR), building upon the study by Danielsen et al. (2019). We use electronic health record (EHR) data, and utilise the frameworks of the [timeseriesflattener](https://github.com/Aarhus-Psychiatry-Research/timeseriesflattener) package and the code base for the PSCYOP projects [psycop-common](https://github.com/Aarhus-Psychiatry-Research/psycop-common). The resulting package, **C**oercion **A**nd **R**estraint in **E**HRs using **ML** (_CARE-ML_), is intended for researchers in the CDR, to further develop and fine-tune tools for prognostic modelling of coercion in psychiatry.
+In our thesis, we built a pipeline for training and evaluating prognostic supervised ML models for predicting the use of restraint on inpatients in the Central Denmark Region (CDR), building upon the study by Danielsen et al. (2019). We use electronic health record (EHR) data, and utilise the frameworks of the [timeseriesflattener](https://github.com/Aarhus-Psychiatry-Research/timeseriesflattener) package and the code base for the PSCYOP projects [psycop-common](https://github.com/Aarhus-Psychiatry-Research/psycop-common). The resulting package, **C**oercion **A**nd **R**estraint in **E**HRs using **ML** (_care-ml_), is intended for researchers in the CDR, to further develop and fine-tune tools for prognostic modelling of coercion in psychiatry.
 
 We focused on building a tool that is interpretable and transparent, including evaluations to examine the relationship between the most important features and the outcome, as well as potential biases. Due to the sensitivity of the data infrastructures utilised in these projects, the packages are designed for very specific use cases within the department of psychiatry in the CDR. As a consequence, the pipeline is intended for a small target audience, and can be utilised and adapted for future research by researchers in the CDR. However, the framework and considerations implemented in this pipeline, such as the definition of temporal aspects and external validation, is generalisable and can be utilised in other ML contexts. 
 
@@ -74,7 +74,7 @@ To install this repository:
 
 1) Clone the repository 
 ```
-git clone https://github.com/Aarhus-Psychiatry-Research/CARE-ML.git
+git clone https://github.com/Aarhus-Psychiatry-Research/care-ml.git
 ```
 2) Install the package and its dependencies from the project root: 
 ```

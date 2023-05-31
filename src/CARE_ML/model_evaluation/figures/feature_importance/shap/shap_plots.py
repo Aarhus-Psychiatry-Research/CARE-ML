@@ -6,16 +6,16 @@ import matplotlib.pyplot as plt
 import plotnine as pn
 import polars as pl
 import shap
-from CARE_ML.model_evaluation.config import (
+from care_ml.model_evaluation.config import (
     COLOURS,
     FIGURES_PATH,
     PN_THEME,
     TEXT_FIGURES_PATH,
 )
-from CARE_ML.model_evaluation.figures.feature_importance.shap.get_shap_values import (
+from care_ml.model_evaluation.figures.feature_importance.shap.get_shap_values import (
     get_top_i_features_by_mean_abs_shap,
 )
-from CARE_ML.model_evaluation.utils.feature_name_to_readable import (
+from care_ml.model_evaluation.utils.feature_name_to_readable import (
     feature_name_to_readable,
 )
 from matplotlib import rcParams

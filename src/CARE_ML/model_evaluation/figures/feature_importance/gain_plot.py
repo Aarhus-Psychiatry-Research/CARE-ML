@@ -4,8 +4,8 @@ from pathlib import Path
 from typing import Literal, Union
 
 import pandas as pd
-from CARE_ML.model_evaluation.config import COLOURS, FIGURES_PATH, PN_THEME
-from CARE_ML.model_evaluation.utils.feature_name_to_readable import (
+from care_ml.model_evaluation.config import COLOURS, FIGURES_PATH, PN_THEME
+from care_ml.model_evaluation.utils.feature_name_to_readable import (
     feature_name_to_readable,
 )
 from plotnine import (
