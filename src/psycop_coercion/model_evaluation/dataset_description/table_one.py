@@ -3,25 +3,15 @@ from psycop.common.model_training.application_modules.process_manager_setup impo
 from psycop.common.model_training.data_loader.data_loader import DataLoader
 from psycop_coercion.model_evaluation.config import TABLES_PATH
 from psycop_coercion.model_evaluation.dataset_description.utils import (
+    load_feature_set,
     table_one_coercion,
     table_one_demographics,
 )
 
 
 def main():
-    # load train and test splits using config
-    cfg, _ = setup(
-        config_file_name="default_config.yaml",
-        application_config_dir_relative_path="../../../../../../psycop_coercion/model_training/application/config/",
-    )
-
-    train_df = DataLoader(data_cfg=cfg.data).load_dataset_from_dir(split_names="train")
-    test_df = DataLoader(data_cfg=cfg.data).load_dataset_from_dir(split_names="val")
-
-    train_df["dataset"] = "train"
-    test_df["dataset"] = "test"
-
-    df = pd.concat([train_df, test_df])
+    # load train and test splits
+    df = load_feature_set()
 
     # create table one - demographics
     table_one_d = table_one_demographics(df)

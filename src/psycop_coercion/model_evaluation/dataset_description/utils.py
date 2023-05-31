@@ -1,9 +1,31 @@
 """util functions to create table one"""
 import pandas as pd
+from psycop.common.model_training.application_modules.process_manager_setup import setup
+from psycop.common.model_training.data_loader.data_loader import DataLoader
+
+
+def load_feature_set() -> pd.DataFrame:
+    """Loads the feature set with text features
+
+    Returns:
+        pd.DataFrame: Df with column denoting train or test
+    """
+    cfg, _ = setup(
+        config_file_name="default_config.yaml",
+        application_config_dir_relative_path="../../../../../../psycop_coercion/model_training/application/config/",
+    )
+
+    train_df = DataLoader(data_cfg=cfg.data).load_dataset_from_dir(split_names="train")
+    test_df = DataLoader(data_cfg=cfg.data).load_dataset_from_dir(split_names="val")
+
+    train_df["dataset"] = "train"
+    test_df["dataset"] = "test"
+
+    return pd.concat([train_df, test_df])
 
 
 def table_one_coercion(df: pd.DataFrame) -> pd.DataFrame:
-    """Create table one - coercion
+    """Create table one - target days and coercion instances
 
     Args:
         df (pd.DataFrame): Train and test set concatenated
@@ -12,23 +34,41 @@ def table_one_coercion(df: pd.DataFrame) -> pd.DataFrame:
         pd.DataFrame: Table one - coercion
     """
 
-    # only days with coercion
-    coercion = df[
+    target_days = df[
         [
             "adm_id",
             "dw_ek_borger",
+            "outcome_timestamp",
             "pred_adm_day_count",
             "outcome_coercion_bool_within_2_days",
             "dataset",
         ]
     ][df["outcome_coercion_bool_within_2_days"] == 1].reset_index()
 
+    coercion_instances = (
+        target_days.groupby(["adm_id", "dw_ek_borger", "outcome_timestamp", "dataset"])[
+            "pred_adm_day_count"
+        ]
+        .max()
+        .reset_index()
+    )
+
+    day_of_outcome = df[df["outcome_timestamp"].notnull()][
+        ["adm_id", "outcome_timestamp", "pred_adm_day_count"]
+    ]
+    day_of_outcome = df.groupby(["adm_id", "outcome_timestamp"])[
+        "pred_adm_day_count"
+    ].max()
+    day_of_outcome = pd.DataFrame(day_of_outcome).reset_index()
+
     # Patients w coercion
-    pt_w_coercion = len(coercion["dw_ek_borger"].unique())
+    pt_w_coercion = len(coercion_instances["dw_ek_borger"].unique())
     pt_w_coercion_p = round(pt_w_coercion / len(df["dw_ek_borger"].unique()) * 100, 2)
 
     pt_w_coercion_train = len(
-        coercion[coercion["dataset"] == "train"]["dw_ek_borger"].unique(),
+        coercion_instances[coercion_instances["dataset"] == "train"][
+            "dw_ek_borger"
+        ].unique(),
     )
     pt_w_coercion_p_train = round(
         pt_w_coercion_train
@@ -38,7 +78,9 @@ def table_one_coercion(df: pd.DataFrame) -> pd.DataFrame:
     )
 
     pt_w_coercion_test = len(
-        coercion[coercion["dataset"] == "test"]["dw_ek_borger"].unique(),
+        coercion_instances[coercion_instances["dataset"] == "test"][
+            "dw_ek_borger"
+        ].unique(),
     )
     pt_w_coercion_p_test = round(
         pt_w_coercion_test
@@ -58,11 +100,11 @@ def table_one_coercion(df: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Adms with coercion
-    adms_w_coercion = len(coercion["adm_id"].unique())
+    adms_w_coercion = len(coercion_instances["adm_id"].unique())
     adms_w_coercion_p = round(adms_w_coercion / len(df["adm_id"].unique()) * 100, 2)
 
     adms_w_coercion_train = len(
-        coercion[coercion["dataset"] == "train"]["adm_id"].unique(),
+        coercion_instances[coercion_instances["dataset"] == "train"]["adm_id"].unique(),
     )
     adms_w_coercion_p_train = round(
         adms_w_coercion_train
@@ -72,7 +114,7 @@ def table_one_coercion(df: pd.DataFrame) -> pd.DataFrame:
     )
 
     adms_w_coercion_test = len(
-        coercion[coercion["dataset"] == "test"]["adm_id"].unique(),
+        coercion_instances[coercion_instances["dataset"] == "test"]["adm_id"].unique(),
     )
     adms_w_coercion_p_test = round(
         adms_w_coercion_test
@@ -92,29 +134,29 @@ def table_one_coercion(df: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Median day coercion happens in adms
-    coercion_day_in_adm_m = coercion["pred_adm_day_count"].median()
-    coercion_day_in_adm_Q1 = coercion["pred_adm_day_count"].quantile(q=0.25)
-    coercion_day_in_adm_Q3 = coercion["pred_adm_day_count"].quantile(q=0.75)
+    coercion_day_in_adm_m = coercion_instances["pred_adm_day_count"].median()
+    coercion_day_in_adm_Q1 = coercion_instances["pred_adm_day_count"].quantile(q=0.25)
+    coercion_day_in_adm_Q3 = coercion_instances["pred_adm_day_count"].quantile(q=0.75)
 
-    coercion_day_in_adm_m_train = coercion[coercion["dataset"] == "train"][
-        "pred_adm_day_count"
-    ].median()
-    coercion_day_in_adm_Q1_train = coercion[coercion["dataset"] == "train"][
-        "pred_adm_day_count"
-    ].quantile(q=0.25)
-    coercion_day_in_adm_Q3_train = coercion[coercion["dataset"] == "train"][
-        "pred_adm_day_count"
-    ].quantile(q=0.75)
+    coercion_day_in_adm_m_train = coercion_instances[
+        coercion_instances["dataset"] == "train"
+    ]["pred_adm_day_count"].median()
+    coercion_day_in_adm_Q1_train = coercion_instances[
+        coercion_instances["dataset"] == "train"
+    ]["pred_adm_day_count"].quantile(q=0.25)
+    coercion_day_in_adm_Q3_train = coercion_instances[
+        coercion_instances["dataset"] == "train"
+    ]["pred_adm_day_count"].quantile(q=0.75)
 
-    coercion_day_in_adm_m_test = coercion[coercion["dataset"] == "test"][
-        "pred_adm_day_count"
-    ].median()
-    coercion_day_in_adm_Q1_test = coercion[coercion["dataset"] == "test"][
-        "pred_adm_day_count"
-    ].quantile(q=0.25)
-    coercion_day_in_adm_Q3_test = coercion[coercion["dataset"] == "test"][
-        "pred_adm_day_count"
-    ].quantile(q=0.75)
+    coercion_day_in_adm_m_test = coercion_instances[
+        coercion_instances["dataset"] == "test"
+    ]["pred_adm_day_count"].median()
+    coercion_day_in_adm_Q1_test = coercion_instances[
+        coercion_instances["dataset"] == "test"
+    ]["pred_adm_day_count"].quantile(q=0.25)
+    coercion_day_in_adm_Q3_test = coercion_instances[
+        coercion_instances["dataset"] == "test"
+    ]["pred_adm_day_count"].quantile(q=0.75)
 
     coercion_day_in_adm = pd.DataFrame(
         {
@@ -125,17 +167,48 @@ def table_one_coercion(df: pd.DataFrame) -> pd.DataFrame:
         },
         index=[0],
     )
+
+    # Pred days with target
+    days_w_target = len(target_days)
+    days_w_target_p = round(days_w_target / len(df) * 100, 2)
+
+    days_w_target_train = len(target_days[target_days["dataset"] == "train"])
+    days_w_target_p_train = round(
+        days_w_target_train / len(df[df["dataset"] == "train"]) * 100,
+        2,
+    )
+
+    days_w_target_test = len(target_days[target_days["dataset"] == "test"])
+    days_w_target_p_test = round(
+        days_w_target_test / len(df[df["dataset"] == "test"]) * 100,
+        2,
+    )
+
+    days_w_target = pd.DataFrame(
+        {
+            "Grouping": "Target days, n (%)",
+            "Overall": f"{days_w_target} ({days_w_target_p})",
+            "Train": f"{days_w_target_train} ({days_w_target_p_train})",
+            "Test": f"{days_w_target_test} ({days_w_target_p_test})",
+        },
+        index=[0],
+    )
+
     # Pred days with coercion
-    days_w_coercion = len(coercion)
+    days_w_coercion = len(coercion_instances)
     days_w_coercion_p = round(days_w_coercion / len(df) * 100, 2)
 
-    days_w_coercion_train = len(coercion[coercion["dataset"] == "train"])
+    days_w_coercion_train = len(
+        coercion_instances[coercion_instances["dataset"] == "train"],
+    )
     days_w_coercion_p_train = round(
         days_w_coercion_train / len(df[df["dataset"] == "train"]) * 100,
         2,
     )
 
-    days_w_coercion_test = len(coercion[coercion["dataset"] == "test"])
+    days_w_coercion_test = len(
+        coercion_instances[coercion_instances["dataset"] == "test"],
+    )
     days_w_coercion_p_test = round(
         days_w_coercion_test / len(df[df["dataset"] == "test"]) * 100,
         2,
@@ -153,7 +226,13 @@ def table_one_coercion(df: pd.DataFrame) -> pd.DataFrame:
 
     # Collect it all
     return pd.concat(
-        [pts_with_coercion, adms_with_coercion, coercion_day_in_adm, days_w_coercion],
+        [
+            pts_with_coercion,
+            adms_with_coercion,
+            coercion_day_in_adm,
+            days_w_target,
+            days_w_coercion,
+        ],
     )
 
 
@@ -175,8 +254,24 @@ def table_one_demographics(df: pd.DataFrame) -> pd.DataFrame:
         .reset_index()
     )
 
-    age_groups = [18, 20, 30, 40, 50, 60, 70, 80, 120]
-    labels = ["18-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79", "80+"]
+    age_groups = [18, 21, 26, 31, 36, 41, 46, 51, 56, 61, 66, 71, 76, 120]
+
+    labels = [
+        "18-20",
+        "21-25",
+        "26-30",
+        "31-35",
+        "36-40",
+        "41-45",
+        "46-50",
+        "51-55",
+        "56-60",
+        "61-65",
+        "66-70",
+        "71-75",
+        "76+",
+    ]
+
     dem["age_group"] = pd.cut(
         dem["pred_age_in_years"],
         bins=age_groups,
@@ -226,22 +321,32 @@ def table_one_demographics(df: pd.DataFrame) -> pd.DataFrame:
         2,
     )
     sex_train_n = len(
-        dem[(dem["pred_sex_female"] is True) & (dem["dataset"] == "train")],
+        dem[
+            (dem["pred_sex_female"] == True) & (dem["dataset"] == "train")  # noqa: E712
+        ],
     )
     sex_train_p = round(
         len(
-            dem[(dem["pred_sex_female"] is True) & (dem["dataset"] == "train")],
+            dem[
+                (dem["pred_sex_female"] == True)  # noqa: E712
+                & (dem["dataset"] == "train")
+            ],
         )
         / len(dem[dem["dataset"] == "train"]["dw_ek_borger"])
         * 100,
         2,
     )
     sex_test_n = len(
-        dem[(dem["pred_sex_female"] is True) & (dem["dataset"] == "test")],
+        dem[
+            (dem["pred_sex_female"] == True) & (dem["dataset"] == "test")  # noqa: E712
+        ],
     )
     sex_test_p = round(
         len(
-            dem[(dem["pred_sex_female"] is True) & (dem["dataset"] == "test")],
+            dem[
+                (dem["pred_sex_female"] == True)  # noqa: E712
+                & (dem["dataset"] == "test")
+            ],
         )
         / len(dem[dem["dataset"] == "test"]["dw_ek_borger"])
         * 100,
@@ -337,3 +442,40 @@ def table_one_demographics(df: pd.DataFrame) -> pd.DataFrame:
 
     # Collect it all
     return pd.concat([n_prediction_days, n_adms, n_pts, n_sex_female, age_median, ag])
+
+
+def get_sex_and_age_group_at_first_contact(df: pd.DataFrame) -> pd.DataFrame:
+    # demographics
+    dem = df[["dw_ek_borger", "pred_sex_female", "pred_age_in_years"]]
+    dem = (
+        dem.groupby(["dw_ek_borger", "pred_sex_female"])["pred_age_in_years"]
+        .min()
+        .reset_index()
+    )
+
+    age_groups = [18, 21, 26, 31, 36, 41, 46, 51, 56, 61, 66, 71, 76, 120]
+
+    labels = [
+        "18-20",
+        "21-25",
+        "26-30",
+        "31-35",
+        "36-40",
+        "41-45",
+        "46-50",
+        "51-55",
+        "56-60",
+        "61-65",
+        "66-70",
+        "71-75",
+        "76+",
+    ]
+
+    dem["age_group"] = pd.cut(
+        dem["pred_age_in_years"],
+        bins=age_groups,
+        labels=labels,
+        right=False,
+    )
+
+    return dem

@@ -1,40 +1,32 @@
 import pandas as pd
-from psycop.common.model_training.application_modules.process_manager_setup import setup
-from psycop.common.model_training.data_loader.data_loader import DataLoader
+from psycop_coercion.model_evaluation.config import (
+    GENERAL_ARTIFACT_PATH,
+)
+from psycop_coercion.model_evaluation.dataset_description.utils import load_feature_set
 
 
 def main():
-    # load train and test splits using config
-    cfg, _ = setup(
-        config_file_name="default_config.yaml",
-        application_config_dir_relative_path="../../../../../../psycop_coercion/model_training/application/config/",
-    )
-
-    train_df = DataLoader(data_cfg=cfg.data).load_dataset_from_dir(split_names="train")
-    test_df = DataLoader(data_cfg=cfg.data).load_dataset_from_dir(split_names="val")
-
-    train_df["dataset"] = "train"
-    test_df["dataset"] = "test"
-
-    df = pd.concat([train_df, test_df])
+    df = load_feature_set()
 
     text_features = df[
-        [col for col in df.columns if col.startswith("pred_aktuelt_psykisk")]
-    ]
-
-    count_vectorizer_30_day = text_features[
         [
             col
-            for col in text_features.columns
-            if col.endswith("CountVectorizer_within_30_days_concatenate_fallback_nan")
+            for col in df.columns
+            if col.startswith("pred_aktuelt_psykisk")
+            and "type_token_ratio" not in col
+            and "mean_number_of_characters" not in col
         ]
     ]
-    percent_missing = (
-        (count_vectorizer_30_day == 0).sum() / count_vectorizer_30_day.shape[0] * 100.00
-    )
-    pd.DataFrame(
-        {
-            "column_name": count_vectorizer_30_day.columns,
-            "percent_missing": percent_missing,
-        },
-    )
+    lb_7 = text_features[
+        [col for col in text_features.columns if "within_7_days" in col]
+    ]
+    lb_30 = text_features[
+        [col for col in text_features.columns if "within_30_days" in col]
+    ]
+
+    lb_7_na_zero_percentages = (((lb_7.isna() | (lb_7 == 0)).mean()) * 100).mean()
+    lb_30_na_zero_percentages = (((lb_30.isna() | (lb_30 == 0)).mean()) * 100).mean()
+
+
+if __name__ == "__main__":
+    main()

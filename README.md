@@ -90,8 +90,12 @@ git clone https://github.com/Aarhus-Psychiatry-Research/psycop-restraint.git
 ```
 python -m pip install -e .
 ```
+3) Install psycop-common as source 
+```
+python -m pip install -e .[src]
+```
 
-3) Optional: Install timeseriesflattener and psycop-common in your 'src' folder as their own repos
+4) Optional: Install timeseriesflattener and psycop-common in your 'src' folder as their own repositories
 ```
 pip install --src ./src -r src-requirements.txt
 ```

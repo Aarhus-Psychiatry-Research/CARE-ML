@@ -24,20 +24,6 @@ df["n_in_bin"] = df.groupby("time_bin")["time_bin"].transform("count")
 
 df_q = df[["time_bin", "n_in_bin"]].drop_duplicates(keep="first")
 
-p = (
-    pn.ggplot(df_q)
-    + pn.geom_bar(
-        pn.aes(x="time_bin", y="n_in_bin"),
-        fill=COLOURS["blue"],  # color="black",
-        stat="identity",
-    )
-    + pn.geom_text(pn.aes(x="time_bin", y="n_in_bin", label="n_in_bin"), nudge_y=0.7)
-    + PN_THEME
-    + pn.xlab("Date")
-    + pn.ylab("Count")
-)
-
-
 # create plot
 p = (
     pn.ggplot(data=df_q, mapping=pn.aes(x="time_bin", y="n_in_bin"))
@@ -45,7 +31,7 @@ p = (
     + pn.labs(
         x="Quarter",
         y="Count",
-        title="Instances of outcome per quarter",
+        title="Target days per quarter",
     )
     + pn.geom_text(
         mapping=pn.aes(label="n_in_bin"),
@@ -59,6 +45,6 @@ p = (
 
 FIGURES_PATH.mkdir(parents=True, exist_ok=True)
 
-save_path = FIGURES_PATH.parent.parent.parent / "coercion_instances_by_time.png"
+save_path = FIGURES_PATH.parent.parent.parent / "coercion_target_days_by_time.png"
 
 p.save(save_path, dpi=600)
