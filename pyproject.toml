@@ -32,7 +32,7 @@ dependencies = [
   "deepchecks==0.13.1",
   "optuna==2.10.1",
   "hydra-optuna-sweeper==1.2.0"
-  "zenml==0.40.1"
+  "zenml==0.39.0"
 ]
 
 [project.license]
