@@ -3,6 +3,8 @@
 from datetime import date
 
 import pandas as pd
+from care_ml.cohort_creation.utils.cohort_hyperparameters import cut_off_prediction_days
+from care_ml.cohort_creation.utils.utils import cut_off_check
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 
 # ---------------------------------
@@ -49,56 +51,11 @@ df_train["adm_duration"] = (
 # Train: Cut-off definition
 # ---------------------------------
 
-
 # How many days and coericon instances will we lose?
-def std_check(df: pd.DataFrame, df_adm_grain: pd.DataFrame, times: int = 1):
-    cut_off = (
-        df_adm_grain["adm_duration"].mean() + df_adm_grain["adm_duration"].std() * times
-    )
-    print(f"Cut_off: Mean + Std x {times} =", cut_off)
 
-    n_excl_days = df[pd.to_timedelta(df["pred_adm_day_count"], "days") > cut_off].shape[  # type: ignore
-        0
-    ]
-    n_days = df.shape[0]
-
-    n_excl_days_with_outcome = df[
-        (pd.to_timedelta(df["pred_adm_day_count"], "days") > cut_off)  # type: ignore
-        & (df["outcome_coercion_bool_within_2_days"] == 1)
-    ].shape[0]
-    n_days_with_outcome = df[df["outcome_coercion_bool_within_2_days"] == 1].shape[0]
-
-    print(
-        "We will exclude",
-        n_excl_days,
-        "days out of",
-        n_days,
-        "days, corresponding to",
-        round((n_excl_days / n_days) * 100, 2),
-        "% of days/observations",
-    )
-    print(
-        "We will lose",
-        n_excl_days_with_outcome,
-        "days with outcome out of",
-        n_days_with_outcome,
-        ", corresponding to",
-        round((n_excl_days_with_outcome / n_days_with_outcome) * 100, 2),
-        "% of days with outcome",
-    )
-
-    print(
-        "We will include",
-        n_days - n_excl_days,
-        "days and",
-        n_days_with_outcome - n_excl_days_with_outcome,
-        "days with outcome",
-    )
-
-
-std_check(df_cohort, df_adm_grain, 1)
-std_check(df_cohort, df_adm_grain, 2)
-std_check(df_cohort, df_adm_grain, 3)
+cut_off_check(df_cohort, df_adm_grain, 1)
+cut_off_check(df_cohort, df_adm_grain, 2)
+cut_off_check(df_cohort, df_adm_grain, 3)
 
 # ---------------------------------
 # Cohort: Cut off days after cut-off
@@ -106,21 +63,10 @@ std_check(df_cohort, df_adm_grain, 3)
 
 cut_off = df_adm_grain["adm_duration"].mean() + df_adm_grain["adm_duration"].std()
 
-df_cohort_exclude_days_after_cut_off = df_cohort[
-    (pd.to_timedelta(df_cohort["pred_adm_day_count"], "days") <= cut_off)
-]
-
+df_cohort_exclude_days_after_cut_off = cut_off_prediction_days(df_cohort, cut_off)  # type: ignore
 
 # ---------------------------------
-# Plot cohort: admission length before and after excluding days after cut-off
-# ---------------------------------
-
-
-# to be done
-
-
-# ---------------------------------
-# WRITE CSV / WRITE TO SQL DB
+# WRITE CSV
 # ---------------------------------
 
 # write csv named with today's date

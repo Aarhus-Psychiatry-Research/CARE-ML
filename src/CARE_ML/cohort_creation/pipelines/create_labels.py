@@ -8,7 +8,9 @@ Labels: Kig to dage frem
 from datetime import date
 
 import pandas as pd
-from care_ml.cohort_creation.utils import create_labels
+from care_ml.cohort_creation.utils.cohort_hyperparameters import (
+    create_binary_and_categorical_labels_with_lookahead,
+)
 from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 from psycop_ml_utils.sql.writer import write_df_to_sql
 
@@ -41,7 +43,10 @@ df_cohort["diff_first_manual_restraint"] = pd.to_datetime(
 
 
 # apply create_labels function to data
-df_cohort = create_labels(df_cohort, lookahead_days=lookahead_days)
+df_cohort = create_binary_and_categorical_labels_with_lookahead(
+    df_cohort,
+    lookahead_days=lookahead_days,
+)
 
 
 # only include admission days at which coercion has not happened yet

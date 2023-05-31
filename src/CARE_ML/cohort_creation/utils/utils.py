@@ -171,77 +171,7 @@ def unpack_adm_days(
     return days_unpacked.drop(columns=0)
 
 
-# function for creating labels depending on lookahead window (in days)
-def create_labels(df: pd.DataFrame, lookahead_days: int) -> pd.DataFrame:
-    """Depending on the lookahead window, create label columns indicating
-    - outcome_coercion_bool_within_{lookahead_days}_days (int): 0 or 1, depending on whether a coercion instance happened within the lookahead window.
-    - outcome_coercion_type_within_{lookahead_days}_days (int): which coercion type happened within the lookahead window.
-    - outcome_mechanical_restraint_bool_within_{lookagead_days}_days (int): 0 or 1, depending on whether mechanical restrained happened within the lookahead window.
-
-    If multiple coercion types happened within the lookahead window, the most "severe" coercion type will be chosen.
-    Coercion hierarchy/classes (least to most severe coercion type):
-    0) No coercion
-    1) Manual restraint
-    2) Forced medication
-    3) Mechanial restraint
-
-    Args:
-        df (pd.DataFrame): coercion cohort dataframe
-        lookahead_days (int): How far to look for coercion instances in days
-
-    Returns:
-        pd.DateFrame: df with three added columns (outcome_coercion_bool_within_{lookahead_days}_days, outcome_coercion_type_within_{lookahead_days}_days, and outcome_mechanical_restraint_bool_within_{lookagead_days}_days)
-    """
-
-    # Outcome bool
-    df[f"outcome_coercion_bool_within_{lookahead_days}_days"] = 0
-    df.loc[
-        (df["diff_first_coercion"] < pd.Timedelta(f"{lookahead_days} days"))
-        & (df["include_pred_time"] == 1),
-        f"outcome_coercion_bool_within_{lookahead_days}_days",
-    ] = 1
-
-    # Outcome type
-    df[f"outcome_coercion_type_within_{lookahead_days}_days"] = 0
-
-    # Mechanical restraint (3)
-    df.loc[
-        (df[f"outcome_coercion_bool_within_{lookahead_days}_days"] == 1)
-        & (
-            df["diff_first_mechanical_restraint"]
-            < pd.Timedelta(f"{lookahead_days} days")
-        ),
-        f"outcome_coercion_type_within_{lookahead_days}_days",
-    ] = 3
-
-    # Chemical restraint (2)
-    df.loc[
-        (df[f"outcome_coercion_bool_within_{lookahead_days}_days"] == 1)
-        & (df[f"outcome_coercion_type_within_{lookahead_days}_days"] != 3)
-        & (df["diff_first_forced_medication"] < pd.Timedelta(f"{lookahead_days} days")),
-        f"outcome_coercion_type_within_{lookahead_days}_days",
-    ] = 2
-
-    # Physical restraint (1)
-    df.loc[
-        (df[f"outcome_coercion_bool_within_{lookahead_days}_days"] == 1)
-        & (df[f"outcome_coercion_type_within_{lookahead_days}_days"] != 2)
-        & (df[f"outcome_coercion_type_within_{lookahead_days}_days"] != 3)
-        & (df["diff_first_manual_restraint"] < pd.Timedelta(f"{lookahead_days} days")),
-        f"outcome_coercion_type_within_{lookahead_days}_days",
-    ] = 1
-
-    # Outcome col with only mechanical restraint
-    df[f"outcome_mechanical_restraint_bool_within_{lookahead_days}_days"] = 0
-    df.loc[
-        (df[f"outcome_coercion_type_within_{lookahead_days}_days"] == 3),
-        f"outcome_mechanical_restraint_bool_within_{lookahead_days}_days",
-    ] = 1
-
-    return df
-
-
-def std_check(df: pd.DataFrame, df_adm_grain: pd.DataFrame, std: int = 1):
+def cut_off_check(df: pd.DataFrame, df_adm_grain: pd.DataFrame, std: int = 1):
     """Check cut-offs based on standard deviations
 
     Args:
