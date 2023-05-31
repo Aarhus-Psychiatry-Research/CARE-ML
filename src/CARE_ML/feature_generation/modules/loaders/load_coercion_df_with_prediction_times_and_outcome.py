@@ -6,7 +6,7 @@ from wasabi import msg
 def load_coercion_prediction_times(
     timestamps_only: bool = False,
 ) -> pd.DataFrame:
-    """Function for loading dataframe with ids, predictions times and outcomes.
+    """Function for loading dataframe with ids, predictions times and outcomes from SQL.
 
     Args:
         timestamps_only (bool, optional): Whether to only return ids and prediction times. Defaults to False.
