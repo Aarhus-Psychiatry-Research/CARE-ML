@@ -51,7 +51,7 @@ We adopt the terminology used in the [timeseriesflattener](https://github.com/Aa
 ### Lookahead and lookbehind windows 
 The prediction time describes the time of prediction and acts as the reference point for the lookbehind and lookahead windows. The lookbehind window denotes how far back in time to look for feature values, while the lookahead window denotes how far into the future to look for outcome values.
 
-<img src="docs/figures/tsf_terminology.jpg" alt= "" class="center" width="60%" height="60%">
+<img src="docs/figures/terminology.jpg" alt= "" class="center" width="60%" height="60%">
 
 _Note. Visualisation of the timeseriesflattener terminology adapted from Bernstoff et al. (2023), reprinted with permission from the original authors._
 
