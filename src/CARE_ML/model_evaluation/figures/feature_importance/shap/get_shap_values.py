@@ -5,14 +5,15 @@ from typing import Literal, Optional
 import pandas as pd
 import polars as pl
 import shap
-from CARE_ML.model_evaluation.config import EVAL_RUN
-from CARE_ML.model_evaluation.utils.feature_name_to_readable import (
+from care_ml.model_evaluation.config import EVAL_RUN
+from care_ml.model_evaluation.utils.feature_name_to_readable import (
     feature_name_to_readable,
 )
-from CARE_ML.utils.best_runs import Run
-from joblib import Memory
+from care_ml.utils.best_runs import Run
 from psycop.common.global_utils.cache import mem
 from sklearn.pipeline import Pipeline
+
+from joblib import Memory
 
 mem = Memory(location=".", verbose=0)  # noqa: F811
 

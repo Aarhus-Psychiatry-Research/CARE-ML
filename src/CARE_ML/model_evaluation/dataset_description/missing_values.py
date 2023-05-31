@@ -1,4 +1,4 @@
-from CARE_ML.model_evaluation.dataset_description.utils import load_feature_set
+from care_ml.model_evaluation.dataset_description.utils import load_feature_set
 
 
 def main():

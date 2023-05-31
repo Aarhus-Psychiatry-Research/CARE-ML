@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import plotnine as pn
-from CARE_ML.model_evaluation.config import (
+from care_ml.model_evaluation.config import (
     COLOURS,
     EVAL_RUN,
     MODEL_NAME,
@@ -10,7 +10,7 @@ from CARE_ML.model_evaluation.config import (
     TEXT_EVAL_RUN,
     TEXT_ROBUSTNESS_PATH,
 )
-from CARE_ML.utils.best_runs import Run
+from care_ml.utils.best_runs import Run
 from psycop.common.model_evaluation.binary.time.absolute_data import (
     create_roc_auc_by_absolute_time_df,
 )

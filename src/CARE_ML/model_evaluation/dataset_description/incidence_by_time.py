@@ -1,13 +1,13 @@
 import pandas as pd
 import plotnine as pn
-from CARE_ML.model_evaluation.config import COLOURS, FIGURES_PATH, PN_THEME
+from care_ml.model_evaluation.config import COLOURS, FIGURES_PATH, PN_THEME
 from psycop.common.model_training.application_modules.process_manager_setup import setup
 from psycop.common.model_training.data_loader.data_loader import DataLoader
 
 # load train and test splits using config
 cfg, _ = setup(
     config_file_name="default_config.yaml",
-    application_config_dir_relative_path="../../../../../../CARE_ML/model_training/application/config/",
+    application_config_dir_relative_path="../../../../../../care_ml/model_training/application/config/",
 )
 
 train_df = DataLoader(data_cfg=cfg.data).load_dataset_from_dir(split_names="train")

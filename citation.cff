@@ -6,7 +6,7 @@ authors:
 - family-names: "Kolding"
   given-names: "Sara"
   orcid: "https://orcid.org/0009-0003-1946-6687"
-title: "CARE-ML - Predicting restraint"
+title: "care-ml - Predicting restraint"
 version: 1.0.0
 date-released: 2023-06-01
-url: "https://github.com/Aarhus-Psychiatry-Research/CARE-ML"
+url: "https://github.com/Aarhus-Psychiatry-Research/care-ml"

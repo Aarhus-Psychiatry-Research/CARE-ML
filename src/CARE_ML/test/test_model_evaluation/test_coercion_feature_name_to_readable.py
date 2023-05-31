@@ -1,4 +1,4 @@
-from CARE_ML.model_evaluation.utils.feature_name_to_readable import (
+from care_ml.model_evaluation.utils.feature_name_to_readable import (
     feature_name_to_readable,
 )
 

@@ -6,7 +6,10 @@ from datetime import date
 
 import numpy as np
 import pandas as pd
-from CARE_ML.cohort_creation.utils import (
+from care_ml.cohort_creation.utils.cohort_hyperparameters import (
+    exclude_prior_outcome_with_lookbehind,
+)
+from care_ml.cohort_creation.utils.utils import (
     concat_readmissions,
     first_coercion_within_admission,
     unpack_adm_days,
@@ -69,13 +72,12 @@ df_cohort = df_adm.merge(df_coercion, how="left", on="dw_ek_borger")
 
 
 # exclude admission if there has been an instance of coercion between 0 and 365 days before admission start (including 0 and 365)
-df_excluded_admissions = df_cohort[
-    (df_cohort.datotid_start - df_cohort.datotid_start_sei >= pd.Timedelta(0, "days"))
-    & (
-        df_cohort.datotid_start - df_cohort.datotid_start_sei
-        <= pd.Timedelta(365, "days")
-    )
-][["dw_ek_borger", "datotid_start"]]
+df_excluded_admissions = exclude_prior_outcome_with_lookbehind(
+    df_cohort,
+    lookbehind=365,
+    col_admission_start="datotid_start",
+    col_outcome_start="datotid_start_sei",
+)[["dw_ek_borger", "datotid_start"]]
 
 # remove duplicate rows, so we have one row per admission (instead of multiple rows for admissions with multiple coercion instances)
 df_excluded_admissions = df_excluded_admissions.drop_duplicates(keep="first")
