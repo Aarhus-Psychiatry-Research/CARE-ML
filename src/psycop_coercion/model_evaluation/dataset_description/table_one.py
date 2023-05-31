@@ -1,6 +1,3 @@
-import pandas as pd
-from psycop.common.model_training.application_modules.process_manager_setup import setup
-from psycop.common.model_training.data_loader.data_loader import DataLoader
 from psycop_coercion.model_evaluation.config import TABLES_PATH
 from psycop_coercion.model_evaluation.dataset_description.utils import (
     load_feature_set,

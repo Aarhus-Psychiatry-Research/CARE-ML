@@ -1,8 +1,5 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-import plotnine as pn
-from pandas.io import parquet
-from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
 from psycop.common.feature_generation.text_models.text_model_paths import (
     PREPROCESSED_TEXT_DIR,
 )
@@ -10,7 +7,6 @@ from psycop.common.feature_generation.text_models.utils import load_text_model
 from psycop_coercion.model_evaluation.config import (
     COLOURS,
     GENERAL_ARTIFACT_PATH,
-    PN_THEME,
 )
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
@@ -60,17 +56,6 @@ def plot_word_freq(
         model = "Bag-of-words"
 
     plot = df.plot(kind="bar", title=f"Most Freq Words: {model}", color=COLOURS["blue"])
-
-    # p = (
-    #     pn.ggplot(df, pn.aes(x="index", y="freq"))
-    #     + pn.geom_col()
-    #     + pn.ylab("Frequency")
-    #     + pn.ggtitle(f"Most Freq Words: {model}")
-    #     + PN_THEME
-    #     + pn.theme(axis_text_x=pn.element_text(rotation=90, hjust=1))
-    # )
-
-    # p.save(GENERAL_ARTIFACT_PATH.parent.parent / f"word_freq_{model_file_name[:-4]}.jpg", dpi=600)
 
     # save
     output_path = (

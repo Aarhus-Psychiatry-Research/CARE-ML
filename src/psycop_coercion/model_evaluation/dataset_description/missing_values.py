@@ -1,7 +1,3 @@
-import pandas as pd
-from psycop_coercion.model_evaluation.config import (
-    GENERAL_ARTIFACT_PATH,
-)
 from psycop_coercion.model_evaluation.dataset_description.utils import load_feature_set
 
 
@@ -24,8 +20,8 @@ def main():
         [col for col in text_features.columns if "within_30_days" in col]
     ]
 
-    lb_7_na_zero_percentages = (((lb_7.isna() | (lb_7 == 0)).mean()) * 100).mean()
-    lb_30_na_zero_percentages = (((lb_30.isna() | (lb_30 == 0)).mean()) * 100).mean()
+    (((lb_7.isna() | (lb_7 == 0)).mean()) * 100).mean()
+    (((lb_30.isna() | (lb_30 == 0)).mean()) * 100).mean()
 
 
 if __name__ == "__main__":
