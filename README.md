@@ -87,7 +87,7 @@ To install this repository,
 
 1) Clone this repo 
 ```
-git clone https://github.com/Aarhus-Psychiatry-Research/psycop-restraint.git
+https://github.com/Aarhus-Psychiatry-Research/CARE-ML.git
 ```
 
 2) Go to the project root and use the pyproject.toml to install dependencies: 
