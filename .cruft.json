@@ -4,9 +4,9 @@
   "checkout": null,
   "context": {
     "cookiecutter": {
-      "project_name": "psycop-coercion",
-      "package_name": "psycop_coercion",
-      "friendly_name": "Psycop Coercion",
+      "project_name": "care-ml",
+      "package_name": "care_ml",
+      "friendly_name": "care-ml",
       "author": "Signe Kirk Brødbæk & Sara Kolding",
       "email": "signebroedbaek@gmail.com & sarakolding@live.dk",
       "github_user": "signekb & sarakolding",

@@ -364,7 +364,7 @@ def test(
 
     if not pytest_args:
         pytest_args = [
-            "src/psycop",
+            "src/psycop",  # psycopp
             "-n 4",
             "-rfE",
             "--failed-first",
