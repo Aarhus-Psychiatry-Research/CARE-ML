@@ -61,7 +61,7 @@ tests = [
   "tox"
 ]
 src = [
-  "psycop @ git+https://github.com/Aarhus-Psychiatry-Research/psycop-common.git@v0.62.1"
+  "psycop @ git+https://github.com/Aarhus-Psychiatry-Research/psycop-common.git@v0.77.1"
 ]
 
 [project.urls]
@@ -198,7 +198,7 @@ legacy_tox_ini = """
 [tox]
 envlist = py{39,310}
 [testenv:{test,type}]
-extras = test, dev, src, type
+extras = tests, dev, src, type
 use_develop = true
 commands =
   test: pytest src/psycop_coercion -n auto {posargs:test}

@@ -31,9 +31,9 @@ def main(cfg: DictConfig) -> float:
         WANDB_LOG_PATH.mkdir(parents=True, exist_ok=True)
 
     if not isinstance(cfg, FullConfigSchema):
-        cfg = convert_omegaconf_to_pydantic_object(cfg)
+        cfg = convert_omegaconf_to_pydantic_object(cfg)  # type: ignore
 
-    return train_model(cfg=cfg)
+    return train_model(cfg=cfg)  # type: ignore
 
 
 if __name__ == "__main__":
