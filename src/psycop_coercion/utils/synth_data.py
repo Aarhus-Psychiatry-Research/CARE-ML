@@ -1,7 +1,7 @@
 """Generate synthetic data for evaluation of the model."""
 import datetime as dt
 from pathlib import Path
-from typing import Any, Literal, Optional, Union
+from typing import Any, Iterable, Literal, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -139,47 +139,164 @@ def synth_pred_times(df: pd.DataFrame, pred_hour: int = 6) -> pd.DataFrame:
     return df
 
 
-if __name__ == "__main__":
-    msg = Printer(timestamp=True)
-    N_ROWS = 1000
+# if __name__ == "__main__":
+msg = Printer(timestamp=True)
+N_ROWS = 1000
 
-    df = pd.DataFrame()
+df = pd.DataFrame()
 
-    df["dw_ek_borger"] = [np.random.randint(0, N_ROWS) for _ in range(N_ROWS)]
+df["dw_ek_borger"] = [np.random.randint(0, N_ROWS) for _ in range(N_ROWS)]
 
-    msg.info("Generating synth admission times")
-    df["admission_timestamp"] = random_timestamp(
-        pd.Timestamp("2015-01-01"),
-        pd.Timestamp("2020-01-01"),
-        N_ROWS,
+msg.info("Generating synth admission times")
+df["admission_timestamp"] = random_timestamp(
+    pd.Timestamp("2015-01-01"),
+    pd.Timestamp("2020-01-01"),
+    N_ROWS,
+)
+
+msg.info("Generating synth outcome timestamps")
+df["outcome_timestamp"] = df.groupby("dw_ek_borger")[  # type: ignore
+    "admission_timestamp"
+].transform("min") + dt.timedelta(
+    seconds=np.random.randint(0, days_to_seconds(days=5)),  # type: ignore
+)
+
+df["outcome_timestamp"] = (
+    df.groupby("dw_ek_borger")["outcome_timestamp"]
+    .apply(
+        lambda x: null_series_with_prob(x, prob=0.85),
+    )
+    .reset_index(drop=True)
+)
+
+# True label
+df["label"] = df["outcome_timestamp"].notnull().astype(int)
+
+msg.info("Generating synth prediction times")
+df = synth_pred_times(df)
+
+msg.info("Generating synth model predictions")
+df["pred_prob"] = [(np.random.random() - 0.45) for _ in range(len(df))]
+df["pred_prob"] = df["pred_prob"].clip(0, 1)
+df["pred"] = df["pred_prob"].clip(0, 1).round()
+
+df = add_age_is_female(df)
+
+df.to_csv(Path("tests") / "test_data" / "model_eval" / "synth_eval_data.csv")
+
+
+
+
+
+
+
+
+
+from psycop_ml_utils.synth_data_generator.synth_col_generators import (
+    generate_data_columns, create_outcome_values
+)
+
+def create_synth_prediction_times() -> pd.DataFrame:
+    column_specs = [{
+        "entity_id": {
+            "column_type": "uniform_int",
+            "min": 0,
+            "max": 10, # CHANGE BACK TO 10_000
+        },
+        "timestamp": {
+            "column_type": "datetime_uniform",
+            "min": 45 * 365,
+            "max": 50 * 365,
+        },
+        "female": {"column_type": "uniform_int", "min": 0, "max": 2}
+    }]
+
+    df = generate_data_columns(
+        predictors=column_specs,
+        n_samples=10,
     )
 
-    msg.info("Generating synth outcome timestamps")
-    df["outcome_timestamp"] = df.groupby("dw_ek_borger")[  # type: ignore
-        "admission_timestamp"
-    ].transform("min") + dt.timedelta(
-        seconds=np.random.randint(0, days_to_seconds(days=5)),  # type: ignore
+    return df
+
+
+def create_synth_feature_float() -> pd.DataFrame:
+    column_specs = [{
+        "entity_id": {
+            "column_type": "uniform_int",
+            "min": 0,
+            "max": 10,
+        },
+        "timestamp": {
+            "column_type": "datetime_uniform",
+            "min": 45 * 365,
+            "max": 50 * 365,
+        },
+        "value": {"column_type": "uniform_float", "min": 0, "max": 10}
+    }]
+
+    df = generate_data_columns(
+        predictors=column_specs,
+        n_samples=100_000,
     )
 
-    df["outcome_timestamp"] = (
-        df.groupby("dw_ek_borger")["outcome_timestamp"]
-        .apply(
-            lambda x: null_series_with_prob(x, prob=0.85),
-        )
-        .reset_index(drop=True)
+    return df
+
+
+def create_synth_feature_binary() -> pd.DataFrame:
+    column_specs = [{
+        "entity_id": {
+            "column_type": "uniform_int",
+            "min": 0,
+            "max": 10,
+        },
+        "timestamp": {
+            "column_type": "datetime_uniform",
+            "min": 45 * 365,
+            "max": 50 * 365,
+        },
+        "value": {"column_type": "uniform_int", "min": 0, "max": 2}
+    }]
+
+    df = generate_data_columns(
+        predictors=column_specs,
+        n_samples=100_000,
     )
 
-    # True label
-    df["label"] = df["outcome_timestamp"].notnull().astype(int)
+    return df
 
-    msg.info("Generating synth prediction times")
-    df = synth_pred_times(df)
 
-    msg.info("Generating synth model predictions")
-    df["pred_prob"] = [(np.random.random() - 0.45) for _ in range(len(df))]
-    df["pred_prob"] = df["pred_prob"].clip(0, 1)
-    df["pred"] = df["pred_prob"].clip(0, 1).round()
+def create_synth_feature_text() -> pd.DataFrame:
+    column_specs = [{
+        "entity_id": {
+            "column_type": "uniform_int",
+            "min": 0,
+            "max": 10,
+        },
+        "timestamp": {
+            "column_type": "datetime_uniform",
+            "min": 45 * 365,
+            "max": 50 * 365,
+        },
+        "value": {"column_type": "text",}
+    }]
 
-    df = add_age_is_female(df)
+    df = generate_data_columns(
+        predictors=column_specs,
+        n_samples=100_000,
+        text_prompt="the patient",
+    )
 
-    df.to_csv(Path("tests") / "test_data" / "model_eval" / "synth_eval_data.csv")
+    return df
+
+def create_synth_outcome(df: pd.DataFrame) -> pd.DataFrame:
+    df["outcome"] = create_outcome_values(
+        n_samples=10,
+        logistic_outcome_model="1*col_name+1*col_name",
+        intercept=0,
+        noise_mean_sd=(0, 1),
+        df=df,
+    )
+
+    df["outcome"] = np.where(df["outcome"] < 0.08, 1, 0)
+
+    return df
