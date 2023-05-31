@@ -69,13 +69,30 @@ df_cohort = df_adm.merge(df_coercion, how="left", on="dw_ek_borger")
 
 
 # exclude admission if there has been an instance of coercion between 0 and 365 days before admission start (including 0 and 365)
-df_excluded_admissions = df_cohort[
-    (df_cohort.datotid_start - df_cohort.datotid_start_sei >= pd.Timedelta(0, "days"))
-    & (
-        df_cohort.datotid_start - df_cohort.datotid_start_sei
-        <= pd.Timedelta(365, "days")
-    )
-][["dw_ek_borger", "datotid_start"]]
+df_excluded_admissions = exclude_prior_outcome_with_lookbehind(df_cohort, lookbehind=365, col_admission_start = "datotid_start", col_outcome_start = "datotid_start_sei")[["dw_ek_borger", "datotid_start"]]
+
+def exclude_prior_outcome_with_lookbehind(df: pd.DataFrame, lookbehind: int = 365, col_admission_start: str = "datotid_start", col_outcome_start: str = "datotid_start_sei") -> pd.DataFrame:
+    """Exclude admissions with the outcome within the lookbehind, i.e. between 0 and lookbehind days before admission start. 
+        If lookbehind = 365, admissions with start time between 0-365 days prior will be excluded. 
+
+    Args:
+        df (pd.DataFrame): Dataframe containing admissions
+        lookbehind (int, optional): Lookbehind window, if the outcome occurs in the time between 0 and the lookbehind prior to the start, this admission will be excluded. Defaults to 365.
+        col_admission_start (str, optional): Name of column with start timestamp. Defaults to "datotid_start".
+        col_outcome_start (str, optional): Name of column with outcome timestamp. Defaults to "datotid_start_sei".
+
+    Returns:
+        pd.DataFrame: Dataframe without the excluded admissions
+    """
+    df_exclude = df[
+        (df_cohort[col_admission_start] - df_cohort[col_outcome_start] >= pd.Timedelta(0, "days"))
+        & (
+            df_cohort.datotid_start - df_cohort[col_outcome_start]
+            <= pd.Timedelta(lookbehind, "days")
+        )
+        ]
+    return df_exclude
+
 
 # remove duplicate rows, so we have one row per admission (instead of multiple rows for admissions with multiple coercion instances)
 df_excluded_admissions = df_excluded_admissions.drop_duplicates(keep="first")
