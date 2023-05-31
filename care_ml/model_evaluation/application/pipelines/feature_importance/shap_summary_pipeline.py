@@ -1,5 +1,14 @@
 from typing import Literal
 
+from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
+from psycop.common.model_training.data_loader.utils import (
+    load_and_filter_split_from_cfg,
+)
+from psycop.common.model_training.utils.col_name_inference import (
+    infer_outcome_col_name,
+    infer_predictor_col_name,
+)
+
 from care_ml.model_evaluation.config import EVAL_RUN, TEXT_EVAL_RUN
 from care_ml.model_evaluation.data.load_true_data import (
     load_file_from_pkl,
@@ -10,14 +19,6 @@ from care_ml.model_evaluation.figures.feature_importance.shap.get_shap_values im
 )
 from care_ml.model_evaluation.figures.feature_importance.shap.shap_plots import (
     plot_shap_summary,
-)
-from psycop.common.model_training.config_schemas.full_config import FullConfigSchema
-from psycop.common.model_training.data_loader.utils import (
-    load_and_filter_split_from_cfg,
-)
-from psycop.common.model_training.utils.col_name_inference import (
-    infer_outcome_col_name,
-    infer_predictor_col_name,
 )
 
 

@@ -3,6 +3,10 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import plotnine as pn
+from psycop.common.model_evaluation.binary.global_performance.roc_auc import (
+    bootstrap_roc,
+)
+
 from care_ml.model_evaluation.config import (
     EVAL_RUN,
     FIGURES_PATH,
@@ -12,9 +16,6 @@ from care_ml.model_evaluation.config import (
     TEXT_FIGURES_PATH,
 )
 from care_ml.utils.best_runs import Run
-from psycop.common.model_evaluation.binary.global_performance.roc_auc import (
-    bootstrap_roc,
-)
 
 
 def bootstrap_results(

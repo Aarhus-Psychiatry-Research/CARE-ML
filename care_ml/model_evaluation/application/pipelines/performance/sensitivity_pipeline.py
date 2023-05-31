@@ -2,6 +2,8 @@ from pathlib import Path
 
 import pandas as pd
 import plotnine as pn
+from psycop.common.model_evaluation.binary.subgroup_data import get_auroc_by_input_df
+
 from care_ml.model_evaluation.config import (
     COLOURS,
     EVAL_RUN,
@@ -12,7 +14,6 @@ from care_ml.model_evaluation.config import (
     TEXT_FIGURES_PATH,
 )
 from care_ml.utils.best_runs import Run
-from psycop.common.model_evaluation.binary.subgroup_data import get_auroc_by_input_df
 
 
 def sensitivity_pipeline(run: Run, path: Path):

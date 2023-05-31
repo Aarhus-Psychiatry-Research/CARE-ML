@@ -6,6 +6,9 @@ from datetime import date
 
 import numpy as np
 import pandas as pd
+from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
+from psycop_ml_utils.sql.writer import write_df_to_sql
+
 from care_ml.cohort_creation.utils.cohort_hyperparameters import (
     exclude_prior_outcome_with_lookbehind,
 )
@@ -14,8 +17,6 @@ from care_ml.cohort_creation.utils.utils import (
     first_coercion_within_admission,
     unpack_adm_days,
 )
-from psycop.common.feature_generation.loaders.raw.sql_load import sql_load
-from psycop_ml_utils.sql.writer import write_df_to_sql
 
 # load data
 df_adm = sql_load(

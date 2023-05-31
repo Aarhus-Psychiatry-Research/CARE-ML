@@ -2,6 +2,10 @@
 
 from typing import Literal
 
+from psycop.common.model_evaluation.feature_importance.feature_importance_table import (
+    generate_feature_importances_table,
+)
+
 from care_ml.model_evaluation.config import (
     EVAL_RUN,
     FIGURES_PATH,
@@ -15,9 +19,6 @@ from care_ml.model_evaluation.data.load_true_data import (
 )
 from care_ml.model_evaluation.figures.feature_importance.gain_plot import (
     plot_gain,
-)
-from psycop.common.model_evaluation.feature_importance.feature_importance_table import (
-    generate_feature_importances_table,
 )
 
 
