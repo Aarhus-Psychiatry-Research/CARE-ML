@@ -31,9 +31,14 @@ def roc_auc_by_sex(run: Run, path: Path):
         .drop_duplicates()
         .sex.value_counts()
     )
+
+    binned_df["proportion_in_bin"] = (
+        binned_df["n_in_bin"] / sum(binned_df.n_in_bin) * 1.7
+    )
+
     binned_df = binned_df.merge(patients, left_on="is_female", right_on=patients.index)
     binned_df["is_female"] = binned_df["is_female"].replace({0: "Male", 1: "Female"})
-    binned_df["proportion_in_bin"] = binned_df["sex"] / sum(binned_df.sex) * 1.65
+    binned_df["n_in_bin"] = binned_df["n_in_bin"].astype(int)
 
     (
         pn.ggplot(
@@ -48,7 +53,7 @@ def roc_auc_by_sex(run: Run, path: Path):
         )
         + pn.geom_path(group=1, size=0.5)
         + pn.geom_text(
-            pn.aes(y="proportion_in_bin", label="sex"),
+            pn.aes(y="proportion_in_bin", label="n_in_bin"),
             va="bottom",
             size=11,
         )
