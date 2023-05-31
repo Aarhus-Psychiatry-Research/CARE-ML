@@ -12,7 +12,7 @@
 
 This repository was developed as a part of the product Master’s Thesis in Cognitive Science by: 
 
-Signe Kirk Brødbæk (201707519) and Sara Kolding (201708816)
+Signe Kirk Brødbæk and Sara Kolding
 
 ## Table of Contents 
 [1. Motivation](#motivation)
