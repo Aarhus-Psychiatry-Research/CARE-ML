@@ -5,6 +5,7 @@ from typing import Literal, Optional
 import pandas as pd
 import polars as pl
 import shap
+from joblib import Memory
 from psycop.common.global_utils.cache import mem
 from psycop_coercion.model_evaluation.config import EVAL_RUN
 from psycop_coercion.model_evaluation.utils.feature_name_to_readable import (
@@ -12,8 +13,6 @@ from psycop_coercion.model_evaluation.utils.feature_name_to_readable import (
 )
 from psycop_coercion.utils.best_runs import Run
 from sklearn.pipeline import Pipeline
-
-from joblib import Memory
 
 mem = Memory(location=".", verbose=0)  # noqa: F811
 
