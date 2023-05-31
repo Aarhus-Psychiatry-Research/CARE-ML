@@ -99,14 +99,15 @@ python -m pip install -e .
 python -m pip install -e .[src]
 ```
 Depending on your terminal, you might have to add '' around .[scr]: 
-````
+```
 python -m pip install -e '.[src]'
-
+```
 
 4) Optional: Install timeseriesflattener and psycop-common in your 'src' folder as their own repositories
 ```
 pip install --src ./src -r src-requirements.txt
 ```
+
 <a id="project_organisation"></a>
 ## 4. Project Organization
 
