@@ -1,10 +1,14 @@
 <a href="https://github.com/Aarhus-Psychiatry-Research/psycop-feature-generation"><img src="https://github.com/Aarhus-Psychiatry-Research/psycop-ml-utils/blob/main/docs/_static/icon_with_title.png?raw=true" width="220" align="right"/></a>
 
 ![python versions](https://img.shields.io/badge/Python-%3E=3.9-blue)
-[![Code style: black](https://img.shields.io/badge/Code%20Style-Black-black)](https://black.readthedocs.io/en/stable/the_black_code_style/current_style.html)
-[![github actions pytest]()
+[![Black](https://img.shields.io/badge/code%20style-black-000000.svg)][black]
+[![Tests](https://github.com/Aarhus-Psychiatry-Research/psycop-coercion/actions/workflows/tests.yml/badge.svg)][tests]
 
-# Predicting use of restraint on psychiatric inpatients using electronic health data and machine learning
+[pypi status]: https://pypi.org/project/psycop-coercion/
+[tests]: https://github.com/Aarhus-Psychiatry-Research/psycop-common/actions?workflow=Tests
+[black]: https://github.com/psf/black
+
+# CARE-ML: Predicting use of restraint on psychiatric inpatients using electronic health data and machine learning
 
 This repository was developed as a part of the product Master’s Thesis in Cognitive Science by: 
 
