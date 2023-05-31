@@ -91,9 +91,9 @@ git clone https://github.com/Aarhus-Psychiatry-Research/CARE-ML.git
 ```
 
 1a) If you prefer working in a venv, you can create a new one (using python 3.9) with the following command (called .venv here): 
-```
-python3.9 -m venv .venv 
-```
+
+`python3.9 -m venv .venv`
+
 2) Go to the project root and use the pyproject.toml to install dependencies: 
 ```
 python -m pip install -e .
