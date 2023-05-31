@@ -21,7 +21,7 @@ def auroc_by_day_of_week(run: Run, path: Path):
 
     binned_df = roc_auc_by_periodic_time_df(
         labels=eval_ds.y,
-        y_hat=eval_ds.y_hat_probs,
+        y_hat_probs=eval_ds.y_hat_probs,
         timestamps=eval_ds.pred_timestamps,
         bin_period="D",
         n_bootstraps=1000,
@@ -71,7 +71,7 @@ def auroc_by_month_of_year(run: Run, path: Path):
 
     binned_df = roc_auc_by_periodic_time_df(
         labels=eval_ds.y,
-        y_hat=eval_ds.y_hat_probs,
+        y_hat_probs=eval_ds.y_hat_probs,
         timestamps=eval_ds.pred_timestamps,
         bin_period="M",
         n_bootstraps=1000,

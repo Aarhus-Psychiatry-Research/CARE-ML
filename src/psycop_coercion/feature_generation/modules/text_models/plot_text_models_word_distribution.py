@@ -8,7 +8,7 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 def plot_word_freq(
     model_file_name: str,
     corpus: pd.DataFrame,
-):
+) -> None:
     """Plot words/bigrams in order of frequency
 
     Args:
@@ -18,7 +18,6 @@ def plot_word_freq(
     """
 
     # load model
-    print("-------- Loading text model --------")
     text_model = load_text_model(filename=model_file_name)
 
     # transform corpus
@@ -33,7 +32,7 @@ def plot_word_freq(
     plot = plt
 
     df = pd.DataFrame(
-        docs.sum(axis=0).T,
+        docs.sum(axis=0).T,  # type: ignore
         index=text_model.get_feature_names_out(),
         columns=["freq"],
     ).sort_values(by="freq", ascending=False)
@@ -45,6 +44,8 @@ def plot_word_freq(
         model = "TF-IDF"
     elif isinstance(text_model, CountVectorizer):
         model = "Bag-of-words"
+    else:
+        model = "Vectorizer"
 
     plot = df.plot(kind="bar", title=f"Most Freq Words: {model}")
 

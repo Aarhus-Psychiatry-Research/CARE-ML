@@ -7,8 +7,8 @@ from psycop_coercion.model_evaluation.steps.model_evaluator import (
     evaluate_model,
 )
 from psycop_coercion.model_evaluation.steps.pipeline_loader import pipeline_loader
-from zenml.pipelines import pipeline
-from zenml.steps.base_step import BaseStep
+from zenml.pipelines import pipeline  # type: ignore
+from zenml.steps.base_step import BaseStep  # type: ignore
 
 
 @pipeline(enable_cache=True)
@@ -26,7 +26,7 @@ if __name__ == "__main__":
     BASE_EVAL_PIPELINE_INSTANCE = base_evaluation_pipeline(
         training_data_loader=get_train_split_step(TrainSplitConf(best_runs=best_run)),
         pipeline_loader=pipeline_loader(TrainSplitConf(best_runs=best_run)),
-        model_evaluator=evaluate_model(),
+        model_evaluator=evaluate_model(),  # type: ignore
     )
 
-    BASE_EVAL_PIPELINE_INSTANCE.run(unlisted=True)
+    BASE_EVAL_PIPELINE_INSTANCE.run(unlisted=True)  # type: ignore

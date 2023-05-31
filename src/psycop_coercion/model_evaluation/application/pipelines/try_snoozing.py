@@ -1,9 +1,9 @@
 import datetime as dt
 
 import pandas as pd
-from coercion_baseline_eval.best_runs import best_run
-from coercion_baseline_eval.data.load_true_data import load_eval_dataset
-from coercion_baseline_eval.snoozing import snooze_dataframe
+from psycop_coercion.model_evaluation.best_runs import best_run
+from psycop_coercion.model_evaluation.data.load_true_data import load_eval_dataset
+from psycop_coercion.model_evaluation.snoozing import snooze_dataframe
 from sklearn.metrics import roc_auc_score
 
 if __name__ == "__main__":
