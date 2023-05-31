@@ -3,9 +3,9 @@ requires = ["setuptools>=61.0.0", "wheel", "setuptools_scm"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "psycop-coercion"
+name = "CARE-ML"
 version = "0.0.0"
-description = "Psycop Coercion"
+description = "CARE-ML"
 authors = [
   {name = "Signe Kirk Brødbæk", email = "signebroedbaek@gmail.com"},
   {name = "Sara Kolding", email = "sarakolding@live.dk"}
@@ -85,9 +85,9 @@ src = [
 ]
 
 [project.urls]
-homepage = "https://github.com/Aarhus-Psychiatry-Research/psycop-coercion"
-repository = "https://github.com/Aarhus-Psychiatry-Research/psycop-coercion"
-documentation = "https://Aarhus-Psychiatry-Research.github.io/psycop-coercion/"
+homepage = "https://github.com/Aarhus-Psychiatry-Research/CARE-ML"
+repository = "https://github.com/Aarhus-Psychiatry-Research/CARE-ML"
+documentation = "https://Aarhus-Psychiatry-Research.github.io/CARE-ML/"
 
 [tool.coverage.run]
 omit = [
@@ -221,8 +221,8 @@ envlist = py{39,310}
 extras = tests, dev, src, type
 use_develop = true
 commands =
-  test: pytest src/psycop_coercion -n auto {posargs:test}
-  type: pyright src/psycop_coercion
+  test: pytest src/CARE_ML -n auto {posargs:test}
+  type: pyright src/CARE_ML
   
 [testenv:docs]
 description: build docs
