@@ -6,8 +6,7 @@ authors:
 - family-names: "Kolding"
   given-names: "Sara"
   orcid: "https://orcid.org/0009-0003-1946-6687"
-title: "PSYCOP - Predicting coercion"
-version: 0.0.0
-# doi: 10.5281/zenodo.6675315
+title: "CARE-ML - Predicting restraint"
+version: 1.0.0
 date-released: 2023-06-01
-url: "https://github.com/Aarhus-Psychiatry-Research/psycop-coercion"
+url: "https://github.com/Aarhus-Psychiatry-Research/CARE-ML"
