@@ -1,4 +1,4 @@
-<a href="https://github.com/Aarhus-Psychiatry-Research/CARE-ML"><img src="https://github.com/Aarhus-Psychiatry-Research/psycop-ml-utils/blob/main/docs/_static/icon_with_title.png?raw=true" width="220" align="right"/></a>
+<a href="https://github.com/Aarhus-Psychiatry-Research/CARE-ML"><img src="docs/figures/care-ml-logo.png" width="220" align="right"/></a>
 
 ![python versions](https://img.shields.io/badge/Python-%3E=3.9-blue)
 [![Black](https://img.shields.io/badge/code%20style-black-000000.svg)][black]
