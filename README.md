@@ -1,6 +1,6 @@
 <a href="https://github.com/Aarhus-Psychiatry-Research/care-ml"><img src="docs/figures/care-ml-logo.png" width="220" align="right"/></a>
 
-![python versions](https://img.shields.io/badge/Python-%3E=3.9-blue)
+![python versions](https://img.shields.io/badge/Python=3.9-blue)
 [![Black](https://img.shields.io/badge/code%20style-black-000000.svg)][black]
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v2.json)](https://github.com/charliermarsh/ruff)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
