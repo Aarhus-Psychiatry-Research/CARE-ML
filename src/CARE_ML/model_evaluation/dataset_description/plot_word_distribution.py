@@ -1,13 +1,13 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-from psycop.common.feature_generation.text_models.text_model_paths import (
-    PREPROCESSED_TEXT_DIR,
-)
-from psycop.common.feature_generation.text_models.utils import load_text_model
 from CARE_ML.model_evaluation.config import (
     COLOURS,
     GENERAL_ARTIFACT_PATH,
 )
+from psycop.common.feature_generation.text_models.text_model_paths import (
+    PREPROCESSED_TEXT_DIR,
+)
+from psycop.common.feature_generation.text_models.utils import load_text_model
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
 

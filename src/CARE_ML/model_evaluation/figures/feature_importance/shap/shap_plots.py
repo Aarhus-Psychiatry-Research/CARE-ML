@@ -6,8 +6,6 @@ import matplotlib.pyplot as plt
 import plotnine as pn
 import polars as pl
 import shap
-from matplotlib import rcParams
-from matplotlib.colors import LinearSegmentedColormap
 from CARE_ML.model_evaluation.config import (
     COLOURS,
     FIGURES_PATH,
@@ -20,6 +18,8 @@ from CARE_ML.model_evaluation.figures.feature_importance.shap.get_shap_values im
 from CARE_ML.model_evaluation.utils.feature_name_to_readable import (
     feature_name_to_readable,
 )
+from matplotlib import rcParams
+from matplotlib.colors import LinearSegmentedColormap
 
 
 def plot_shap_for_feature(

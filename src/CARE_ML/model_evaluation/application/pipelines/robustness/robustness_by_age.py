@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import plotnine as pn
-from psycop.common.model_evaluation.binary.subgroup_data import get_auroc_by_input_df
 from CARE_ML.model_evaluation.config import (
     COLOURS,
     EVAL_RUN,
@@ -12,6 +11,7 @@ from CARE_ML.model_evaluation.config import (
     TEXT_ROBUSTNESS_PATH,
 )
 from CARE_ML.utils.best_runs import Run
+from psycop.common.model_evaluation.binary.subgroup_data import get_auroc_by_input_df
 
 
 def roc_auc_by_age(run: Run, path: Path):

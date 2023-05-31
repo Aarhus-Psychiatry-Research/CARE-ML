@@ -25,10 +25,10 @@ selected_specs = [
     if "pred" in spec.get_col_str() or "outc" in spec.get_col_str()
 ]
 
+from CARE_ML.model_evaluation.config import TEXT_EVAL_RUN, TEXT_TABLES_PATH
 from psycop.common.feature_generation.data_checks.flattened.feature_describer import (
     save_feature_descriptive_stats_from_dir,
 )
-from CARE_ML.model_evaluation.config import TEXT_EVAL_RUN, TEXT_TABLES_PATH
 
 out_dir = TEXT_TABLES_PATH / "feature_description"
 out_dir.mkdir(parents=True, exist_ok=True)
