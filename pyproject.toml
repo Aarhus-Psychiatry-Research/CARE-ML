@@ -198,7 +198,7 @@ legacy_tox_ini = """
 [tox]
 envlist = py{39,310}
 [testenv:{test,type}]
-extras = test, dev, src, type
+extras = tests, dev, src, type
 use_develop = true
 commands =
   test: pytest src/psycop_coercion -n auto {posargs:test}
