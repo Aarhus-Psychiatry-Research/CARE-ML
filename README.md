@@ -10,7 +10,7 @@
 [tests]: https://github.com/Aarhus-Psychiatry-Research/psycop-common/actions?workflow=Tests
 [black]: https://github.com/psf/black
 
-# care-ml: Predicting use of restraint on psychiatric inpatients using electronic health data and machine learning
+# CaRE-ML: Predicting use of restraint on psychiatric inpatients using electronic health data and machine learning
 
 This repository was developed as a part of the product Master’s Thesis in Cognitive Science by: 
 
@@ -36,11 +36,11 @@ Signe Kirk Brødbæk and Sara Kolding
 
  <a id="motivation"></a>
 ## 1. Motivation
-The use restraint, has been increasing in Danish psychiatric units, despite the objective from the Ministry of Health and the Danish Regions to decrease the use of coercive measures in Danish psychiatric units (see the figure below). In recent years, the literature on machine learning (ML) and prognostic prediction models in clinical contexts has expanded, including studies identifying individual patients at high risk of being restrained (Danielsen et al., 2019). By offering early detection of at-risk patients, such models can enable staff to reallocate resources to a subgroup of patients, to avoid the use of coercive interventions.
+The use of restraint has been increasing in Danish psychiatric units, despite the objective from the Ministry of Health and the Danish Regions to decrease the use of coercive measures in Danish psychiatric units (see the figure below). In recent years, the literature on machine learning (ML) and prognostic prediction models in clinical contexts has expanded, including studies identifying individual patients at high risk of being restrained (Danielsen et al., 2019). By offering early detection of at-risk patients, such models can enable staff to reallocate resources to a subgroup of patients, to avoid the use of coercive interventions.
    
 <img src="docs/figures/restraint_stats.jpg" alt= “” width="70%" height="70%" class="center">
 
-In our thesis, we built a pipeline for training and evaluating prognostic supervised ML models for predicting the use of restraint on inpatients in the Central Denmark Region (CDR), building upon the study by Danielsen et al. (2019). We use electronic health record (EHR) data, and utilise the frameworks of the [timeseriesflattener](https://github.com/Aarhus-Psychiatry-Research/timeseriesflattener) package and the code base for the PSCYOP projects [psycop-common](https://github.com/Aarhus-Psychiatry-Research/psycop-common). The resulting package, **C**oercion **A**nd **R**estraint in **E**HRs using **ML** (_care-ml_), is intended for researchers in the CDR, to further develop and fine-tune tools for prognostic modelling of coercion in psychiatry.
+In our thesis, we built this package, _Coercion and Restraint in EHRs using Machine Learning_ (CaRE-ML), for training and evaluating prognostic supervised ML models for predicting the use of restraint on inpatients in the Central Denmark Region (CDR), building upon the study by Danielsen et al. (2019). We use electronic health record (EHR) data, and utilise the frameworks of the [timeseriesflattener](https://github.com/Aarhus-Psychiatry-Research/timeseriesflattener) package and the code base for the PSCYOP projects [psycop-common](https://github.com/Aarhus-Psychiatry-Research/psycop-common). The resulting package, **C**oercion **A**nd **R**estraint in **E**HRs using **ML** (_care-ml_), is intended for researchers in the CDR, to further develop and fine-tune tools for prognostic modelling of coercion in psychiatry.
 
 We focused on building a tool that is interpretable and transparent, including evaluations to examine the relationship between the most important features and the outcome, as well as potential biases. Due to the sensitivity of the data infrastructures utilised in these projects, the packages are designed for very specific use cases within the department of psychiatry in the CDR. As a consequence, the pipeline is intended for a small target audience, and can be utilised and adapted for future research by researchers in the CDR. However, the framework and considerations implemented in this pipeline, such as the definition of temporal aspects and external validation, is generalisable and can be utilised in other ML contexts. 
 
