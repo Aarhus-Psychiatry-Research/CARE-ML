@@ -5,7 +5,7 @@ from psycop.common.feature_generation.text_models.text_model_pipeline import (
 )
 
 if __name__ == "__main__":
-    model_names = ["bow", "tfidf"]
+    model_names = [["bow"], ["tfidf"]]
 
     for model in model_names:
         text_model_pipeline(
