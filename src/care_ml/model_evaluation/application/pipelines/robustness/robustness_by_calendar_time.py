@@ -1,10 +1,6 @@
 from pathlib import Path
 
 import plotnine as pn
-from psycop.common.model_evaluation.binary.time.absolute_data import (
-    create_roc_auc_by_absolute_time_df,
-)
-
 from care_ml.model_evaluation.config import (
     COLOURS,
     EVAL_RUN,
@@ -15,6 +11,9 @@ from care_ml.model_evaluation.config import (
     TEXT_ROBUSTNESS_PATH,
 )
 from care_ml.utils.best_runs import Run
+from psycop.common.model_evaluation.binary.time.absolute_data import (
+    create_roc_auc_by_absolute_time_df,
+)
 
 
 def roc_auc_by_calendar_time(run: Run, path: Path):

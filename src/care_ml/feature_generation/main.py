@@ -5,6 +5,10 @@ import sys
 from pathlib import Path
 
 import wandb
+from care_ml.feature_generation.modules.loaders.load_coercion_df_with_prediction_times_and_outcome import (
+    load_coercion_prediction_times,
+)
+from care_ml.feature_generation.modules.specify_features import FeatureSpecifier
 from psycop.common.feature_generation.application_modules.describe_flattened_dataset import (
     save_flattened_dataset_description_to_disk,
 )
@@ -23,11 +27,6 @@ from psycop.common.feature_generation.application_modules.save_dataset_to_disk i
 from psycop.common.feature_generation.application_modules.wandb_utils import (
     wandb_alert_on_exception,
 )
-
-from care_ml.feature_generation.modules.loaders.load_coercion_df_with_prediction_times_and_outcome import (
-    load_coercion_prediction_times,
-)
-from care_ml.feature_generation.modules.specify_features import FeatureSpecifier
 
 log = logging.getLogger()
 
